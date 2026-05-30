@@ -1,0 +1,288 @@
+{
+  "info": {
+    "name": "Comensaña Propiedades API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login exitoso', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.status).to.eql('success');",
+                  "  pm.expect(json.data.email).to.eql('admin@comesana.com');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@comesana.com\",\n  \"password\": \"comesana2025\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Properties",
+      "item": [
+        {
+          "name": "List all",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/properties?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "properties"],
+              "query": [
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List with filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/properties?ciudad=La Plata&operacion=Venta&tipo=Depto&precioMax=200000&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "properties"],
+              "query": [
+                { "key": "ciudad", "value": "La Plata" },
+                { "key": "operacion", "value": "Venta" },
+                { "key": "tipo", "value": "Depto" },
+                { "key": "precioMax", "value": "200000" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List with pagination (cursor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/properties?limit=2",
+              "host": ["{{base_url}}"],
+              "path": ["api", "properties"],
+              "query": [
+                { "key": "limit", "value": "2" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/properties/{{property_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "properties", "{{property_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ciudad\": \"La Plata\",\n  \"barrio\": \"Centro\",\n  \"tipo\": \"Depto\",\n  \"operacion\": \"Venta\",\n  \"moneda\": \"USD\",\n  \"direccion\": \"Calle 50 1234\",\n  \"precio\": 95000,\n  \"m2_totales\": 65,\n  \"m2_cubiertos\": 55,\n  \"ambientes\": 3,\n  \"dormitorios\": 2,\n  \"banos\": 1,\n  \"descripcion\": \"Departamento céntrico en excelente estado.\",\n  \"lat\": -34.9215,\n  \"lng\": -57.9545,\n  \"fotos\": [\n    \"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800\",\n    \"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800\"\n  ],\n  \"amenities\": [\"Cochera\", \"Balcón\"]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/properties",
+              "host": ["{{base_url}}"],
+              "path": ["api", "properties"]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precio\": 99000,\n  \"descripcion\": \"Departamento céntrico recién renovado.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/properties/{{property_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "properties", "{{property_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/properties/{{property_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "properties", "{{property_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inquiries",
+      "item": [
+        {
+          "name": "Create inquiry (public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Inquiry creada exitosamente', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.status).to.eql('success');",
+                  "  pm.expect(json.data.nombre).to.eql('Juan Pérez');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"property_id\": \"{{property_id}}\",\n  \"nombre\": \"Juan Pérez\",\n  \"email\": \"juan@ejemplo.com\",\n  \"telefono\": \"2215556789\",\n  \"mensaje\": \"Hola, me interesa esta propiedad. Quisiera coordinar una visita.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inquiries",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inquiries"]
+            }
+          }
+        },
+        {
+          "name": "List inquiries (admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inquiries",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inquiries"]
+            }
+          }
+        },
+        {
+          "name": "Toggle read/unread (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inquiries/{{inquiry_id}}/read",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inquiries", "{{inquiry_id}}", "read"]
+            }
+          }
+        },
+        {
+          "name": "Delete inquiry (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inquiries/{{inquiry_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inquiries", "{{inquiry_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "property_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "inquiry_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
