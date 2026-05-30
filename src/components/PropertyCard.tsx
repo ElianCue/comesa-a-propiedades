@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Bed, Bath, Maximize2, MapPin } from "lucide-react";
-import { formatPrice, type Property } from "@/lib/properties";
+import { formatPrice, type Property, createPropertySlug } from "@/lib/properties";
 
 interface Props {
   p: Property;
@@ -9,10 +9,11 @@ interface Props {
 }
 
 export function PropertyCard({ p, variant = "grid" }: Props) {
+  const slug = createPropertySlug(p);
   if (variant === "list") {
     return (
       <Link
-        href={`/propiedad/${p.id}`}
+        href={`/propiedad/${slug}`}
         className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl sm:flex-row"
       >
         <div className="relative aspect-[4/3] w-full flex-shrink-0 overflow-hidden bg-muted sm:w-72 sm:aspect-[4/3]">
@@ -72,7 +73,7 @@ export function PropertyCard({ p, variant = "grid" }: Props) {
 
   return (
     <Link
-      href={`/propiedad/${p.id}`}
+      href={`/propiedad/${slug}`}
         className="group flex flex-col rounded-xl bg-card shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl"
     >
       <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-muted">

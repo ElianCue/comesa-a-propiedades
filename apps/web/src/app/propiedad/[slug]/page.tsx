@@ -9,7 +9,7 @@ import { Footer } from "@/components/Footer";
 import { PropertyCard } from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useProperties";
 import { api } from "@/lib/api-client";
-import { formatPrice, WHATSAPP, propertyTitle, propertyDescription, SITE_URL } from "@/lib/properties";
+import { formatPrice, WHATSAPP, propertyTitle, propertyDescription, SITE_URL, findPropertyBySlug } from "@/lib/properties";
 import {
   Bed,
   Bath,
@@ -28,13 +28,13 @@ import {
 } from "lucide-react";
 
 interface Props {
-  params: { id: string };
+  params: { slug: string };
 }
 
 export default function PropertyPage({ params }: Props) {
-  const { id } = params;
+  const { slug } = params;
   const [all] = useProperties();
-  const p = all.find((x) => x.id === id);
+  const p = findPropertyBySlug(all, slug);
   useEffect(() => {
     if (p) {
       document.title = propertyTitle(p);

@@ -96,6 +96,32 @@ export function propertyDescription(p: Property): string {
   return `${p.descripcion.substring(0, 120)} — ${p.ambientes} ambientes, ${p.dormitorios} dorm., ${p.m2Totales} m². ${p.operacion === "Venta" ? formatPrice(p) : formatPrice(p)}.`;
 }
 
+export function createPropertySlug(p: Property): string {
+  // Normalizar: convertir a lowercase, reemplazar caracteres especiales, remover acentos
+  const normalized = p.direccion
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remover acentos
+    .replace(/[^a-z0-9\s-]/g, "") // remover caracteres especiales
+    .replace(/\s+/g, "-") // reemplazar espacios con guiones
+    .replace(/-+/g, "-") // remover guiones múltiples
+    .replace(/^-|-$/g, ""); // remover guiones al inicio/final
+
+  // Agregar ciudad y ID para unicidad
+  const slug = `${normalized}-${p.ciudad.toLowerCase().replace(/\s+/g, "-")}-${p.id}`;
+  return slug;
+}
+
+export function findPropertyBySlug(properties: Property[], slug: string): Property | undefined {
+  // El slug contiene el ID al final separado por guion
+  // Extraer el ID del slug: último componente después del último guion
+  const parts = slug.split("-");
+  const id = parts[parts.length - 1];
+  
+  // Buscar por ID
+  return properties.find((p) => p.id === id);
+}
+
 export const WHATSAPP = "5492215551234";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://comesana-propiedades.vercel.app";
