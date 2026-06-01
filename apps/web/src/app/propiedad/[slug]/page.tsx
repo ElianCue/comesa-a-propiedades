@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { PropertyCard } from "@/components/PropertyCard";
-import { useProperties } from "@/hooks/useProperties";
 import { api } from "@/lib/api-client";
-import { formatPrice, WHATSAPP, propertyTitle, propertyDescription, SITE_URL, findPropertyBySlug } from "@/lib/properties";
+import { formatPrice, WHATSAPP, propertyTitle, propertyDescription, SITE_URL, type Property } from "@/lib/properties";
 import {
   Bed,
   Bath,
@@ -33,8 +30,18 @@ interface Props {
 
 export default function PropertyPage({ params }: Props) {
   const { slug } = params;
-  const [all] = useProperties();
-  const p = findPropertyBySlug(all, slug);
+  const [p, setP] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const id = slug.split("-").pop();
+    if (!id) { setLoading(false); return; }
+    api.get<any>(`/api/properties/${id}`)
+      .then((res) => setP(res?.data ?? null))
+      .catch(() => setP(null))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
   useEffect(() => {
     if (p) {
       document.title = propertyTitle(p);
@@ -52,7 +59,7 @@ export default function PropertyPage({ params }: Props) {
   const [formSending, setFormSending] = useState(false);
   const [formError, setFormError] = useState("");
 
-  if (!all.length) {
+  if (loading) {
     return (
       <div className="min-h-screen">
         <Navbar />
@@ -60,20 +67,11 @@ export default function PropertyPage({ params }: Props) {
     );
   }
 
-  if (!p) {
-    notFound();
-  }
-
-  const related = all
-    .filter(
-      (x) => x.activo && x.id !== p.id && (x.barrio === p.barrio || x.tipo === p.tipo || x.ciudad === p.ciudad)
-    )
-    .slice(0, 3);
-
   // Form state is hoisted above so hooks order is stable during hydration.
 
   const submitInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!p) return;
     setFormSending(true);
     setFormError("");
     try {
@@ -86,6 +84,22 @@ export default function PropertyPage({ params }: Props) {
     }
   };
 
+  if (!p) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="mx-auto max-w-7xl px-6 py-12 text-center">
+          <h1 className="text-2xl font-bold mb-4">Propiedad no encontrada</h1>
+          <p className="text-muted-foreground mb-6">La propiedad que buscas no existe o fue eliminada.</p>
+          <Link href="/" className="text-primary hover:underline">
+            Volver al listado
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   const waText = encodeURIComponent(
     `Hola! Me interesa la propiedad en ${p.direccion}, ${p.barrio} (${p.ciudad}) publicada en Comensaña Propiedades. Precio: ${formatPrice(p)}`
   );
@@ -97,6 +111,15 @@ export default function PropertyPage({ params }: Props) {
     p.pileta && { icon: Waves, label: "Pileta" },
     p.balcon && { icon: Home, label: "Balcón" },
   ].filter(Boolean) as { icon: typeof Car; label: string }[];
+
+  // Extra amenities from ArgentProp boolean features
+  const extraAmenities: string[] = [];
+  if (p.amenities) {
+    const known = new Set(["Cochera", "Jardín", "Parrilla", "Pileta", "Balcón"]);
+    for (const a of p.amenities) {
+      if (!known.has(a)) extraAmenities.push(a);
+    }
+  }
 
   const schema = {
     "@context": "https://schema.org",
@@ -231,6 +254,10 @@ export default function PropertyPage({ params }: Props) {
               <Spec value={p.cochera ? "Sí" : "No"} label="Cochera" />
               {p.piso && <Spec value={p.piso} label="Piso" />}
               {p.antiguedad && <Spec value={p.antiguedad} label="Antigüedad" />}
+              {p.m2Terreno && <Spec value={`${p.m2Terreno} m²`} label="Terreno" />}
+              {p.m2Descubierta && <Spec value={`${p.m2Descubierta} m²`} label="Descubierta" />}
+              {p.cantPlantas && <Spec value={`${p.cantPlantas}`} label="Plantas" />}
+              {p.expensas && <Spec value={p.expensas} label="Expensas" />}
             </div>
 
             <div className="mt-8">
@@ -252,6 +279,37 @@ export default function PropertyPage({ params }: Props) {
                       <a.icon className="h-4 w-4" />
                       {a.label}
                     </span>
+                  ))}
+                  {extraAmenities.map((name) => (
+                    <span
+                      key={name}
+                      className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-2 text-sm"
+                    >
+                      {name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {p.detalles && Object.keys(p.detalles).length > 0 && (
+              <div className="mt-8">
+                <h2 className="font-display text-2xl font-semibold">Detalles</h2>
+                <div className="mt-3 grid gap-6">
+                  {Object.entries(p.detalles).map(([seccion, items]) => (
+                    <div key={seccion}>
+                      <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                        {seccion}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-x-8 gap-y-2 rounded-xl border border-border bg-card p-4 text-sm sm:grid-cols-3">
+                        {items.map((item) => (
+                          <div key={item.clave} className="flex justify-between gap-2">
+                            <span className="text-muted-foreground">{item.clave}</span>
+                            <span className="font-medium text-foreground">{item.valor}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -362,18 +420,7 @@ export default function PropertyPage({ params }: Props) {
           </aside>
         </div>
 
-        {related.length > 0 && (
-          <div className="mt-20">
-            <h2 className="font-display text-3xl font-semibold">
-              Propiedades relacionadas
-            </h2>
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((r) => (
-                <PropertyCard key={r.id} p={r} />
-              ))}
-            </div>
-          </div>
-        )}
+
       </div>
 
       <Footer />
