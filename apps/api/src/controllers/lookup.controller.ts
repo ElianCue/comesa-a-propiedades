@@ -14,7 +14,10 @@ export class LookupController {
 
   async getBarrios(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await lookupService.getBarrios(req.params.ciudadId);
+      const ciudadId = Array.isArray(req.params.ciudadId)
+        ? req.params.ciudadId[0]
+        : req.params.ciudadId;
+      const data = await lookupService.getBarrios(ciudadId);
       res.json(ApiResponse.success(data));
     } catch (error) {
       next(error);

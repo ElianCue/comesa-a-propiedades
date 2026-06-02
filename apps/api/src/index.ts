@@ -1,8 +1,10 @@
-import express from "express";
+import express, { type Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import serverless from "serverless-http";
+import rateLimit from "express-rate-limit";
+import * as Sentry from "@sentry/node";
 import { errorHandler } from "./middleware/error-handler";
 import { authRoutes } from "./routes/auth.routes";
 import { propertyRoutes } from "./routes/property.routes";
@@ -12,7 +14,36 @@ import { logger } from "./lib/logger";
 import { env } from "./lib/env";
 import { prisma } from "./lib/prisma";
 
-const app = express();
+// Initialize Sentry
+const sentryDsn = process.env.SENTRY_DSN;
+if (sentryDsn) {
+  Sentry.init({
+    dsn: sentryDsn,
+    environment: env.nodeEnv,
+    tracesSampleRate: env.nodeEnv === "production" ? 0.1 : 1.0,
+  });
+}
+
+const app: Express = express();
+
+// Disable ETag to avoid 304 responses on dynamic content
+app.disable("etag");
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per IP per windowMs
+  message: "Demasiadas solicitudes desde esta dirección IP",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  skipSuccessfulRequests: true,
+  message: "Demasiados intentos de login. Intenta más tarde.",
+});
 
 // Middleware global
 app.use(helmet());
@@ -22,6 +53,14 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
+// No-cache headers for API endpoints
+app.use("/api", (req, _res, next) => {
+  _res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+  _res.set("Pragma", "no-cache");
+  _res.set("Expires", "0");
+  next();
+});
+
 // Simple request logging
 app.use((req, _res, next) => {
   logger.info({ method: req.method, url: req.originalUrl }, "incoming request");
@@ -29,6 +68,8 @@ app.use((req, _res, next) => {
 });
 
 // Routes
+app.use("/api/", limiter);
+app.use("/api/auth/login", authLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/inquiries", inquiryRoutes);
@@ -63,6 +104,11 @@ app.get("/api/health", async (_req, res) => {
     env: env.nodeEnv,
   });
 });
+
+// Sentry error handler (debe ir después de otros middlewares pero antes del error handler final)
+if (sentryDsn) {
+  Sentry.setupExpressErrorHandler(app);
+}
 
 // Error handler (debe ir último)
 app.use(errorHandler);

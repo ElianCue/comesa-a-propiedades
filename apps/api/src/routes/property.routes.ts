@@ -4,7 +4,7 @@ import { authenticate } from "../middleware/auth.middleware";
 import { validate } from "../middleware/validation.middleware";
 import { propertyQuerySchema, createPropertySchema, updatePropertySchema } from "../validators/property.validator";
 
-const router = Router();
+const router: Router = Router();
 
 router.get("/", propertyController.list.bind(propertyController));
 router.get("/:id", propertyController.getById.bind(propertyController));

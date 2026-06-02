@@ -4,7 +4,7 @@ import { authenticate } from "../middleware/auth.middleware";
 import { validate } from "../middleware/validation.middleware";
 import { createInquirySchema } from "../validators/inquiry.validator";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/", validate(createInquirySchema), inquiryController.create.bind(inquiryController));
 router.get("/", authenticate, inquiryController.list.bind(inquiryController));

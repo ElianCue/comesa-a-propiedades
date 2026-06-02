@@ -3,7 +3,7 @@ import { authController } from "../controllers/auth.controller";
 import { validate } from "../middleware/validation.middleware";
 import { loginSchema } from "../validators/auth.validator";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/login", validate(loginSchema), authController.login.bind(authController));
 router.post("/logout", authController.logout.bind(authController));

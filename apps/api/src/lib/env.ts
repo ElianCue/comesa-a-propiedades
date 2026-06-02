@@ -5,7 +5,9 @@ const envSchema = z.object({
   CLOUDINARY_URL: z.string().optional(),
   FRONTEND_URL: z.string().url().optional(),
   PORT: z.string().optional(),
-  JWT_SECRET: z.string().min(8).optional(),
+  JWT_SECRET: z
+    .string()
+    .min(32, "JWT_SECRET must be at least 32 characters"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { lookupController } from "../controllers/lookup.controller";
 
-const router = Router();
+const router: Router = Router();
 
 router.get("/cities", lookupController.getCities.bind(lookupController));
 router.get("/cities/:ciudadId/barrios", lookupController.getBarrios.bind(lookupController));
