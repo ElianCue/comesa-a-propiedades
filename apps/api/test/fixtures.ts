@@ -71,10 +71,10 @@ export async function seedTestFixtures() {
   });
 
   await prisma.propertyPhoto.create({
-    data: { property_id: property.id, url: "__test__https://res.cloudinary.com/test/image1.jpg", orden: 0 },
+    data: { property_id: property.id, url: "https://res.cloudinary.com/test/image1.jpg", orden: 0 },
   });
   await prisma.propertyPhoto.create({
-    data: { property_id: property.id, url: "__test__https://res.cloudinary.com/test/image2.jpg", orden: 1 },
+    data: { property_id: property.id, url: "https://res.cloudinary.com/test/image2.jpg", orden: 1 },
   });
 
   await prisma.propertyAmenity.create({

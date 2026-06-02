@@ -57,6 +57,7 @@ model Amenity {
   nombre      String            @unique
   slug        String            @unique
   icono       String?
+  grupo       String?
   properties  PropertyAmenity[]
   @@map("amenities")
 }
@@ -83,6 +84,10 @@ model Property {
   descripcion      String
   lat              Float
   lng              Float
+  m2_terreno       Decimal? @map("m2_terreno")
+  m2_descubierta   Decimal? @map("m2_descubierta")
+  cant_plantas     Int?
+  expensas         String?
   activo           Boolean  @default(true)
   apto_banco       Boolean  @default(false) @map("apto_banco")
   permuta          Boolean  @default(false)
@@ -96,6 +101,7 @@ model Property {
   currency      Currency         @relation(fields: [currency_id], references: [id])
   amenities     PropertyAmenity[]
   photos        PropertyPhoto[]
+  detalles      PropertyDetail[]
   inquiries     Inquiry[]
 
   @@index([city_id, operation_id, property_type_id, barrio_id])
@@ -132,6 +138,18 @@ model Admin {
   created_at DateTime @default(now()) @map("created_at")
   updated_at DateTime @updatedAt @map("updated_at")
   @@map("admins")
+}
+
+model PropertyDetail {
+  id          String   @id @default(cuid())
+  property_id String
+  seccion     String
+  clave       String
+  valor       String
+  property    Property @relation(fields: [property_id], references: [id], onDelete: Cascade)
+  @@unique([property_id, clave])
+  @@index([property_id])
+  @@map("property_details")
 }
 
 model Inquiry {

@@ -34,7 +34,12 @@ export const createPropertySchema = z.object({
   apto_banco: z.boolean().default(false),
   permuta: z.boolean().default(false),
   amenities: z.array(amenitySchema).default([]),
-  fotos: z.array(z.string()).default([]),
+  fotos: z.array(z.string().url("URL de foto inválida")).default([]),
+  detalles: z.record(z.string()).default({}),
+  m2_terreno: z.number().positive().optional(),
+  m2_descubierta: z.number().positive().optional(),
+  cant_plantas: z.number().int().positive().optional(),
+  expensas: z.string().optional(),
 });
 
 export const updatePropertySchema = createPropertySchema.partial();

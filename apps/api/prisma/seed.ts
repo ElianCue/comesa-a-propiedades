@@ -65,15 +65,40 @@ async function main() {
 
   // ── Amenities ──
   const amenityData = [
-    { nombre: "Cochera", slug: "cochera", icono: "Car" },
-    { nombre: "Balcón", slug: "balcon", icono: "Expand" },
-    { nombre: "Jardín", slug: "jardin", icono: "TreePine" },
-    { nombre: "Parrilla", slug: "parrilla", icono: "CookingPot" },
-    { nombre: "Pileta", slug: "pileta", icono: "Waves" },
+    // Existentes
+    { nombre: "Cochera", slug: "cochera", icono: "Car", grupo: null },
+    { nombre: "Balcón", slug: "balcon", icono: "Expand", grupo: "Ambientes" },
+    { nombre: "Jardín", slug: "jardin", icono: "TreePine", grupo: null },
+    { nombre: "Parrilla", slug: "parrilla", icono: "CookingPot", grupo: null },
+    { nombre: "Pileta", slug: "pileta", icono: "Waves", grupo: null },
+    // Ambientes del departamento
+    { nombre: "Cocina", slug: "cocina", icono: "CookingPot", grupo: "Ambientes" },
+    { nombre: "Comedor diario", slug: "comedor-diario", icono: "Utensils", grupo: "Ambientes" },
+    { nombre: "Living", slug: "living", icono: "Sofa", grupo: "Ambientes" },
+    // Instalaciones del departamento
+    { nombre: "Agua caliente", slug: "agua-caliente", icono: "Droplets", grupo: "Instalaciones" },
+    { nombre: "Agua corriente", slug: "agua-corriente", icono: "Droplets", grupo: "Instalaciones" },
+    { nombre: "Amoblado", slug: "amoblado", icono: "Armchair", grupo: "Instalaciones" },
+    { nombre: "Ascensor", slug: "ascensor", icono: "ArrowUpDown", grupo: "Instalaciones" },
+    { nombre: "Cable", slug: "cable", icono: "Tv", grupo: "Instalaciones" },
+    { nombre: "Electricidad", slug: "electricidad", icono: "Zap", grupo: "Instalaciones" },
+    { nombre: "Gas natural", slug: "gas-natural", icono: "Flame", grupo: "Instalaciones" },
+    { nombre: "Pavimento", slug: "pavimento", icono: "Road", grupo: "Instalaciones" },
+    { nombre: "Termotanque", slug: "termotanque", icono: "Thermometer", grupo: "Instalaciones" },
+    // Servicios
+    { nombre: "Calefacción", slug: "calefaccion", icono: "Thermometer", grupo: "Servicios" },
+    // Generales
+    { nombre: "Permite Mascotas", slug: "permite-mascotas", icono: "PawPrint", grupo: "Generales" },
+    // Edificio
+    { nombre: "Ascensor de servicio", slug: "ascensor-servicio", icono: "ArrowUpDown", grupo: "Edificio" },
   ];
   const amenities: Record<string, string> = {};
   for (const a of amenityData) {
-    const amenity = await prisma.amenity.create({ data: a });
+    const amenity = await prisma.amenity.upsert({
+      where: { nombre: a.nombre },
+      update: { icono: a.icono, grupo: a.grupo },
+      create: a,
+    });
     amenities[a.nombre] = amenity.id;
   }
   console.log("  ✓ Amenities");

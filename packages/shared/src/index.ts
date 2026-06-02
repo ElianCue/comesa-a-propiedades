@@ -14,9 +14,12 @@ export interface Property {
   moneda: Moneda;
   m2Totales: number;
   m2Cubiertos: number;
+  m2Terreno?: number;
+  m2Descubierta?: number;
   ambientes: number;
   dormitorios: number;
   banos: number;
+  cantPlantas?: number;
   cochera: boolean;
   balcon: boolean;
   jardin: boolean;
@@ -24,6 +27,7 @@ export interface Property {
   pileta: boolean;
   piso?: string;
   antiguedad?: string;
+  expensas?: string;
   descripcion: string;
   lat: number;
   lng: number;
@@ -31,6 +35,8 @@ export interface Property {
   activo: boolean;
   aptoBanco: boolean;
   permuta: boolean;
+  amenities?: string[];
+  detalles?: Record<string, Array<{ clave: string; valor: string }>>;
 }
 
 export const CIUDADES: Ciudad[] = ["La Plata", "Mar del Plata"];
