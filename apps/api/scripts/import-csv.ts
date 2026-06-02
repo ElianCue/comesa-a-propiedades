@@ -212,6 +212,36 @@ async function main() {
 
       const fotos = Array.isArray(mapped.fotos) ? (mapped.fotos as string[]) : [];
 
+      // Handle amenitiesExtra (from detail page boolean features)
+      const extraAmenities: string[] = mapped.amenitiesExtra as string[] || [];
+      for (const name of extraAmenities) {
+        const normalized = name.trim();
+        const existingAmenity = allAmenities.find(
+          (a) => a.nombre.toLowerCase() === normalized.toLowerCase()
+        );
+        if (existingAmenity) {
+          if (!amenityIds.includes(existingAmenity.id)) amenityIds.push(existingAmenity.id);
+        } else {
+          // Create new amenity on the fly
+          const slug = normalized
+            .toLowerCase()
+            .replace(/[^a-z0-9áéíóúñü\s-]/g, "")
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-");
+          try {
+            const created = await prisma.amenity.create({
+              data: { nombre: normalized, slug, grupo: null },
+            });
+            allAmenities.push(created);
+            amenityByName.set(created.nombre, created);
+            amenityIds.push(created.id);
+          } catch {
+            // Duplicate or error, skip
+          }
+        }
+      }
+
       if (dryRun) {
         console.log(
           `[${fila}] ${mapped.direccion}, ${mapped.barrio} — ${mapped.operacion} — $${mapped.precio}`
@@ -249,6 +279,10 @@ async function main() {
             permuta: !!mapped.permuta,
             piso: (mapped.piso as string) || null,
             antiguedad: (mapped.antiguedad as string) || null,
+            m2_terreno: mapped.m2Terreno ? Number(mapped.m2Terreno) : undefined,
+            m2_descubierta: mapped.m2Descubierta ? Number(mapped.m2Descubierta) : undefined,
+            cant_plantas: mapped.cantPlantas ? Number(mapped.cantPlantas) : undefined,
+            expensas: (mapped.expensas as string) || null,
             activo: true,
           },
         });
@@ -272,6 +306,22 @@ async function main() {
               amenity_id,
             })),
           });
+        }
+
+        // Handle detalles (key-value specs from ArgentProp detail pages)
+        if (mapped.detalles) {
+          const entries = Object.entries(mapped.detalles as Record<string, string>);
+          if (entries.length > 0) {
+            await prisma.propertyDetail.deleteMany({ where: { property_id: existing.id } });
+            await prisma.propertyDetail.createMany({
+              data: entries.map(([clave, valor]) => ({
+                property_id: existing.id,
+                seccion: "Características",
+                clave,
+                valor,
+              })),
+            });
+          }
         }
 
         result.imported++;
@@ -299,6 +349,10 @@ async function main() {
             permuta: !!mapped.permuta,
             piso: (mapped.piso as string) || null,
             antiguedad: (mapped.antiguedad as string) || null,
+            m2_terreno: mapped.m2Terreno ? Number(mapped.m2Terreno) : undefined,
+            m2_descubierta: mapped.m2Descubierta ? Number(mapped.m2Descubierta) : undefined,
+            cant_plantas: mapped.cantPlantas ? Number(mapped.cantPlantas) : undefined,
+            expensas: (mapped.expensas as string) || null,
             activo: true,
             photos: {
               create: fotos.map((url, idx) => ({ url, orden: idx })),
@@ -306,6 +360,17 @@ async function main() {
             amenities: {
               create: amenityIds.map((amenity_id) => ({ amenity_id })),
             },
+            detalles: mapped.detalles
+              ? {
+                  create: Object.entries(mapped.detalles as Record<string, string>).map(
+                    ([clave, valor]) => ({
+                      seccion: "Características",
+                      clave,
+                      valor,
+                    })
+                  ),
+                }
+              : undefined,
           },
         });
 

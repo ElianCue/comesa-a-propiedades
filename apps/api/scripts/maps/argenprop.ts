@@ -31,6 +31,8 @@ const mapping: CsvMapping = {
     permuta: { campo: "permuta", transform: siNoToBool },
     fotos: { campo: "fotos", transform: parseUrls },
     expensas: { campo: "expensas" },
+    detalles: { campo: "detalles", transform: parseJsonRecord },
+    amenities_extra: { campo: "amenitiesExtra", transform: parsePipeList },
   },
   columnAliases: {
     "sup. total": "m2_totales",
@@ -72,6 +74,23 @@ function parseUrls(v: string): string[] {
   return String(v)
     .split(/[;,|]/)
     .map((u) => u.trim())
+    .filter(Boolean);
+}
+
+function parseJsonRecord(v: string): Record<string, string> {
+  if (!v) return {};
+  try {
+    return JSON.parse(v);
+  } catch {
+    return {};
+  }
+}
+
+function parsePipeList(v: string): string[] {
+  if (!v) return [];
+  return String(v)
+    .split("|")
+    .map((s) => s.trim())
     .filter(Boolean);
 }
 

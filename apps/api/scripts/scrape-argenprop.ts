@@ -90,6 +90,8 @@ interface EnrichedProperty {
   permuta: boolean;
   expensas: string;
   fotos: string[];
+  detalles: Record<string, string>;
+  amenitiesExtra: string[];
 }
 
 // ── Constants ──
@@ -468,6 +470,8 @@ async function scrapeDetails(listings: RawListing[]): Promise<EnrichedProperty[]
     let antiguedad = l.antiguedad;
     let expensas = l.expensasCard;
     let fotos: string[] = [];
+    const detalles: Record<string, string> = {};
+    const amenitiesExtra: string[] = [];
 
       if (html) {
         const $ = cheerio.load(html);
@@ -476,78 +480,74 @@ async function scrapeDetails(listings: RawListing[]): Promise<EnrichedProperty[]
       const detailDesc = clean($("section#description p").first().text());
       if (detailDesc) descripcion = detailDesc;
 
-      // Parse structured specs from property-features sections
-      $("ul.property-features li").each((_, li) => {
-        const $li = $(li);
-        const $h3 = $li.find("h3");
-        const fullText = clean($h3.text());
-        const tLow = fullText.toLowerCase();
+      // Parse ALL structured specs from property-features sections
+      $('ul.property-features').each((_, ul) => {
+        const $ul = $(ul);
+        // Find the nearest preceding h2 section title
+        const $h2 = $ul.prevAll('h2').first();
+        const sectionTitle = clean($h2.text()) || 'General';
 
-        if ($li.hasClass("property-features-item")) {
-          // Boolean checklist item (e.g., "Balcón", "Cochera", "Parrilla")
-          if (/cochera/.test(tLow) || /box/.test(tLow) || /garage/.test(tLow)) cochera = true;
-          if (/balc/.test(tLow)) balcon = true;
-          if (/jard(in|ín)/.test(tLow) || /parque/.test(tLow)) jardin = true;
-          if (/parrilla/.test(tLow) || /quincho/.test(tLow)) parrilla = true;
-          if (/pileta/.test(tLow) || /piscina/.test(tLow)) pileta = true;
-          if (/(apto.*(cred|cré|prof))/i.test(tLow)) aptoBanco = true;
-          if (/permuta/.test(tLow)) permuta = true;
-        } else {
-          // Key-value pair or boolean-without-label
-          const $strong = $h3.find("strong");
-          if ($strong.length > 0) {
-            const strongText = clean($strong.text());
-            const labelText = fullText.replace(strongText, "").replace(/:$/, "").trim();
+        $ul.find('li').each((_, li) => {
+          const $li = $(li);
+          const $h3 = $li.find('h3');
+          const fullText = clean($h3.text());
+          const tLow = fullText.toLowerCase();
 
-            if (labelText) {
-              // Key-value pair: Label: <strong>Value</strong>
-              const lLow = labelText.toLowerCase();
-              if (/baños?\b/.test(lLow) || /toilette/.test(lLow)) {
-                const m = strongText.match(/(\d+)/);
-                if (m) banos = parseInt(m[1], 10);
+          if ($li.hasClass('property-features-item')) {
+            // Boolean checklist item
+            if (/cochera/.test(tLow) || /box/.test(tLow) || /garage/.test(tLow)) cochera = true;
+            else if (/balc/.test(tLow)) balcon = true;
+            else if (/jard(in|ín)/.test(tLow) || /parque/.test(tLow)) jardin = true;
+            else if (/parrilla/.test(tLow) || /quincho/.test(tLow)) parrilla = true;
+            else if (/pileta/.test(tLow) || /piscina/.test(tLow)) pileta = true;
+            else if (/(apto.*(cred|cré|prof))/i.test(tLow)) aptoBanco = true;
+            else if (/permuta/.test(tLow)) permuta = true;
+            else {
+              amenitiesExtra.push(fullText);
+            }
+          } else {
+            const $strong = $h3.find('strong');
+            if ($strong.length > 0) {
+              const strongText = clean($strong.text());
+              const labelText = fullText.replace(strongText, '').replace(/:$/, '').trim();
+
+              if (labelText) {
+                const lLow = labelText.toLowerCase();
+                if (/baños?\b/.test(lLow) || /toilette/.test(lLow)) {
+                  const m = strongText.match(/(\d+)/); if (m) banos = parseInt(m[1], 10);
+                } else if (/ambiente/.test(lLow)) {
+                  const m = strongText.match(/(\d+)/); if (m) ambientes = parseInt(m[1], 10);
+                } else if (/sup\.?\s*cubierta/.test(lLow)) {
+                  const m = strongText.match(/([\d.,]+)/); if (m) m2Cubiertos = Math.round(parseFloat(m[1].replace(",", ".")));
+                } else if (/sup\.?\s*total/.test(lLow)) {
+                  const m = strongText.match(/([\d.,]+)/); if (m) m2Totales = Math.round(parseFloat(m[1].replace(",", ".")));
+                } else if (/sup\.?\s*terreno/.test(lLow)) {
+                  const m = strongText.match(/([\d.,]+)/); if (m) m2Terreno = Math.round(parseFloat(m[1].replace(",", ".")));
+                } else if (/sup\.?\s*descubierta/.test(lLow)) {
+                  const m = strongText.match(/([\d.,]+)/); if (m) m2Descubierta = Math.round(parseFloat(m[1].replace(",", ".")));
+                } else if (/antiguedad/.test(lLow)) {
+                  const m = strongText.match(/(\d+)/); if (m) antiguedad = `${m[1]} años`;
+                } else if (/^piso\b/.test(lLow)) {
+                  piso = strongText;
+                } else if (/plantas/.test(lLow)) {
+                  const m = strongText.match(/(\d+)/); if (m) cantPlantas = parseInt(m[1], 10);
+                } else if (/expensas/.test(lLow)) {
+                  expensas = strongText;
+                } else {
+                  detalles[labelText] = strongText;
+                }
+              } else {
+                // Boolean without label
+                const sLow = strongText.toLowerCase();
+                if (sLow.includes("apto profesional") || sLow.includes("apto crédito") || sLow.includes("apto credito")) aptoBanco = true;
+                else if (sLow.includes("permuta")) permuta = true;
+                else {
+                  amenitiesExtra.push(strongText);
+                }
               }
-              if (/ambiente/.test(lLow)) {
-                const m = strongText.match(/(\d+)/);
-                if (m) ambientes = parseInt(m[1], 10);
-              }
-              if (/sup\.?\s*cubierta/.test(lLow)) {
-                const m = strongText.match(/([\d.,]+)/);
-                if (m) m2Cubiertos = Math.round(parseFloat(m[1].replace(",", ".")));
-              }
-              if (/sup\.?\s*total/.test(lLow)) {
-                const m = strongText.match(/([\d.,]+)/);
-                if (m) m2Totales = Math.round(parseFloat(m[1].replace(",", ".")));
-              }
-              if (/sup\.?\s*terreno/.test(lLow)) {
-                const m = strongText.match(/([\d.,]+)/);
-                if (m) m2Terreno = Math.round(parseFloat(m[1].replace(",", ".")));
-              }
-              if (/sup\.?\s*descubierta/.test(lLow)) {
-                const m = strongText.match(/([\d.,]+)/);
-                if (m) m2Descubierta = Math.round(parseFloat(m[1].replace(",", ".")));
-              }
-              if (/antiguedad/.test(lLow)) {
-                const m = strongText.match(/(\d+)/);
-                if (m) antiguedad = `${m[1]} años`;
-              }
-              if (/^piso\b/.test(lLow)) {
-                piso = strongText;
-              }
-              if (/plantas/.test(lLow)) {
-                const m = strongText.match(/(\d+)/);
-                if (m) cantPlantas = parseInt(m[1], 10);
-              }
-              if (/expensas/.test(lLow)) {
-                expensas = strongText;
-              }
-            } else {
-              // Boolean item: <strong>Apto Profesional</strong> (no label text before strong)
-              const sLow = strongText.toLowerCase();
-              if (sLow.includes("apto profesional") || sLow.includes("apto crédito") || sLow.includes("apto credito")) aptoBanco = true;
-              if (sLow.includes("permuta")) permuta = true;
             }
           }
-        }
+        });
       });
 
       // Fallback: property-main-features top bar (icon pills)
@@ -654,7 +654,9 @@ async function scrapeDetails(listings: RawListing[]): Promise<EnrichedProperty[]
       });
     }
 
-    fotos = dedupPhotos(fotos);
+    fotos = dedupPhotos(fotos)
+      .filter((url) => /^https?:\/\//i.test(url))
+      .map(upgradeImgUrl);
 
     if (ambientes === 0) ambientes = Math.max(l.dormitorios + 1, 2);
     if (banos === 0) banos = Math.max(1, Math.floor(l.dormitorios / 2));
@@ -690,6 +692,8 @@ async function scrapeDetails(listings: RawListing[]): Promise<EnrichedProperty[]
       permuta,
       expensas,
       fotos,
+      detalles,
+      amenitiesExtra,
     });
 
     if (count < listings.length) await delay(DELAY_MS);
@@ -763,7 +767,7 @@ async function generateCsv(properties: EnrichedProperty[]) {
   console.log("═══════ Fase 4: Generando CSV ═══════\n");
 
   const header =
-    "direccion,precio,moneda,tipo,operacion,ciudad,barrio,m2_totales,m2_cubiertos,m2_terreno,m2_descubierta,ambientes,dormitorios,banos,cant_plantas,expensas,descripcion,lat,lng,antiguedad,piso,cochera,balcon,jardin,parrilla,pileta,apto_banco,permuta,fotos";
+    "direccion,precio,moneda,tipo,operacion,ciudad,barrio,m2_totales,m2_cubiertos,m2_terreno,m2_descubierta,ambientes,dormitorios,banos,cant_plantas,expensas,descripcion,lat,lng,antiguedad,piso,cochera,balcon,jardin,parrilla,pileta,apto_banco,permuta,fotos,detalles,amenities_extra";
 
   const tipos = new Set<string>();
   const rows: string[] = [header];
@@ -801,6 +805,8 @@ async function generateCsv(properties: EnrichedProperty[]) {
         p.aptoBanco ? "si" : "no",
         p.permuta ? "si" : "no",
         p.fotos.join("|"),
+        JSON.stringify(p.detalles),
+        p.amenitiesExtra.join("|"),
       ]
         .map(csv)
         .join(",")
