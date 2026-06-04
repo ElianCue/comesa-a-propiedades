@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm --parallel -r run dev",
     "build": "pnpm -r run build",
+    "postinstall": "pnpm build --filter @comesana/shared && pnpm --filter @comesana/api exec prisma generate",
     "db:migrate": "pnpm --filter @comesana/api run prisma:migrate",
     "db:seed": "pnpm --filter @comesana/api run prisma:seed",
     "db:studio": "pnpm --filter @comesana/api run prisma:studio"

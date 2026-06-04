@@ -116,7 +116,7 @@ export function propertyDescription(p: Property): string {
 
 export const WHATSAPP = "5492215551234";
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://comesana-propiedades.vercel.app";
+export const SITE_URL = "https://comesana-propiedades.vercel.app";
 
 export function createPropertySlug(p: Property): string {
   const normalized = p.direccion
