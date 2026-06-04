@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model City {
+  id         String     @id @default(cuid())
+  nombre     String     @unique
+  slug       String     @unique
+  barrios    Barrio[]
+  properties Property[]
+  @@map("cities")
+}
+
+model Barrio {
+  id         String     @id @default(cuid())
+  nombre     String
+  city_id    String
+  city       City       @relation(fields: [city_id], references: [id])
+  properties Property[]
+  @@unique([city_id, nombre])
+  @@map("barrios")
+}
+
+model PropertyType {
+  id         String     @id @default(cuid())
+  nombre     String     @unique
+  slug       String     @unique
+  properties Property[]
+  @@map("property_types")
+}
+
+model Operation {
+  id         String     @id @default(cuid())
+  nombre     String     @unique
+  slug       String     @unique
+  properties Property[]
+  @@map("operations")
+}
+
+model Currency {
+  id         String     @id @default(cuid())
+  codigo     String     @unique
+  simbolo    String
+  properties Property[]
+  @@map("currencies")
+}
+
+model Amenity {
+  id          String            @id @default(cuid())
+  nombre      String            @unique
+  slug        String            @unique
+  icono       String?
+  grupo       String?
+  properties  PropertyAmenity[]
+  @@map("amenities")
+}
+
+model Property {
+  id               String   @id @default(cuid())
+  city_id          String
+  barrio_id        String
+  property_type_id String
+  operation_id     String
+  currency_id      String
+
+  direccion        String
+  precio           Int
+  m2_totales       Decimal
+  m2_cubiertos     Decimal
+  ambientes        Int
+  dormitorios      Int
+  banos            Int
+  piso             String?
+  antiguedad       String?
+  descripcion      String
+  lat              Float
+  lng              Float
+  m2_terreno       Decimal?
+  m2_descubierta   Decimal?
+  cant_plantas     Int?
+  expensas         String?
+  activo           Boolean  @default(true)
+  apto_banco       Boolean  @default(false)
+  permuta          Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  city          City             @relation(fields: [city_id], references: [id])
+  barrio        Barrio           @relation(fields: [barrio_id], references: [id])
+  property_type PropertyType     @relation(fields: [property_type_id], references: [id])
+  operation     Operation        @relation(fields: [operation_id], references: [id])
+  currency      Currency         @relation(fields: [currency_id], references: [id])
+  amenities     PropertyAmenity[]
+  photos        PropertyPhoto[]
+  detalles      PropertyDetail[]
+  inquiries     Inquiry[]
+
+  @@index([city_id, operation_id, property_type_id, barrio_id])
+  @@index([precio])
+  @@index([created_at])
+  @@map("properties")
+}
+
+model PropertyAmenity {
+  property_id String
+  amenity_id  String
+  property    Property @relation(fields: [property_id], references: [id], onDelete: Cascade)
+  amenity     Amenity  @relation(fields: [amenity_id], references: [id])
+  @@id([property_id, amenity_id])
+  @@map("property_amenities")
+}
+
+model PropertyPhoto {
+  id          String  @id @default(cuid())
+  property_id String
+  url         String
+  orden       Int     @default(0)
+  alt         String?
+  property    Property @relation(fields: [property_id], references: [id], onDelete: Cascade)
+  @@index([property_id, orden])
+  @@map("property_photos")
+}
+
+model Admin {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  password   String
+  nombre     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  @@map("admins")
+}
+
+model PropertyDetail {
+  id          String   @id @default(cuid())
+  property_id String
+  seccion     String
+  clave       String
+  valor       String
+  property    Property @relation(fields: [property_id], references: [id], onDelete: Cascade)
+  @@unique([property_id, clave])
+  @@index([property_id])
+  @@map("property_details")
+}
+
+model PropertyAlert {
+  id          String   @id @default(cuid())
+  email       String
+  nombre      String?
+  ciudad      String?
+  operacion   String?
+  tipo        String?
+  barrio      String?
+  precio_min  Int?
+  precio_max  Int?
+  ambientes   Int?
+  moneda      String?
+  dormitorios Int?
+  active      Boolean  @default(true)
+  notified    Boolean  @default(false)
+  notified_at DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  @@map("property_alerts")
+}
+
+model Inquiry {
+  id          String   @id @default(cuid())
+  property_id String
+  nombre      String
+  email       String
+  telefono    String?
+  mensaje     String?
+  leido       Boolean  @default(false)
+  created_at  DateTime @default(now())
+  property    Property @relation(fields: [property_id], references: [id])
+  @@index([property_id])
+  @@index([leido, created_at])
+  @@map("inquiries")
+}
