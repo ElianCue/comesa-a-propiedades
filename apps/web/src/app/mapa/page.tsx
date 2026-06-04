@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useProperties } from "@/hooks/useProperties";
-import { CIUDADES, getBarrios, formatPrice, type Property, type Ciudad } from "@/lib/properties";
+import { CIUDADES, getBarrios, formatPriceFromProperty, type Property, type Ciudad } from "@/lib/properties";
 import {
   Search,
   X,
@@ -81,7 +81,7 @@ export default function MapaPage() {
   };
 
   const popupHtml = (p: Property) =>
-    `<div style="font-family:DM Sans,sans-serif;width:240px;border-radius:12px;overflow:hidden"><img src="${p.fotos[0]}" style="width:100%;height:130px;object-fit:cover"/><div style="padding:12px 14px"><div style="font-weight:700;font-size:17px;margin-bottom:2px;color:oklch(0.78 0.13 80)">${formatPrice(p)}</div><div style="font-size:13px;color:#222;margin-bottom:4px">${p.direccion}</div><div style="font-size:11px;color:#888;margin-bottom:10px">${p.barrio}, ${p.ciudad} · ${p.m2Totales}m² · ${p.dormitorios} dorm</div><a href="/propiedad/${p.id}" style="display:inline-block;width:100%;padding:9px 0;background:oklch(0.32 0.08 255);color:white;border-radius:8px;font-size:13px;font-weight:600;text-align:center;text-decoration:none">Ver detalles</a></div></div>`;
+    `<div style="font-family:DM Sans,sans-serif;width:240px;border-radius:12px;overflow:hidden"><img src="${p.fotos[0]}" style="width:100%;height:130px;object-fit:cover"/><div style="padding:12px 14px"><div style="font-weight:700;font-size:17px;margin-bottom:2px;color:oklch(0.78 0.13 80)">${formatPriceFromProperty(p)}</div><div style="font-size:13px;color:#222;margin-bottom:4px">${p.direccion}</div><div style="font-size:11px;color:#888;margin-bottom:10px">${p.barrio}, ${p.ciudad} · ${p.m2Totales}m² · ${p.dormitorios} dorm</div><a href="/propiedad/${p.id}" style="display:inline-block;width:100%;padding:9px 0;background:oklch(0.32 0.08 255);color:white;border-radius:8px;font-size:13px;font-weight:600;text-align:center;text-decoration:none">Ver detalles</a></div></div>`;
 
   const initMap = useCallback(() => {
     if (!mapRef.current || mapInstance.current) return;
@@ -131,7 +131,7 @@ export default function MapaPage() {
     filtered.forEach((p) => {
       const icon = L.divIcon({
         className: "",
-        html: `<div style="background:${p.operacion === "Venta" ? "oklch(0.32 0.08 255)" : "oklch(0.45 0.15 25)"};color:white;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;font-family:DM Sans,sans-serif;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,0.35);border:2.5px solid white">${formatPrice(p)}</div>`,
+        html: `<div style="background:${p.operacion === "Venta" ? "oklch(0.32 0.08 255)" : "oklch(0.45 0.15 25)"};color:white;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;font-family:DM Sans,sans-serif;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,0.35);border:2.5px solid white">${formatPriceFromProperty(p)}</div>`,
         iconSize: [140, 36],
         iconAnchor: [70, 36],
       });
@@ -452,7 +452,7 @@ export default function MapaPage() {
                           isActive ? "text-[oklch(0.78_0.13_80)]" : ""
                         }`}
                       >
-                        {formatPrice(p)}
+                        {formatPriceFromProperty(p)}
                       </div>
                       <div className="truncate text-xs text-foreground/80">
                         {p.direccion}

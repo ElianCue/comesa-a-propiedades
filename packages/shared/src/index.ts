@@ -3,6 +3,38 @@ export type Tipo = "Casa" | "Depto" | "PH" | "Local" | "Terreno" | "Campo" | "Of
 export type Moneda = "USD" | "ARS";
 export type Ciudad = "La Plata" | "Mar del Plata";
 
+export interface PropertyType {
+  id: string;
+  nombre: string;
+  slug: string;
+}
+
+export interface Operation {
+  id: string;
+  nombre: string;
+  slug: string;
+}
+
+export interface Currency {
+  id: string;
+  codigo: string;
+  simbolo: string;
+}
+
+export interface Amenity {
+  id: string;
+  nombre: string;
+  slug: string;
+  icono?: string;
+  grupo?: string;
+}
+
+export interface City {
+  id: string;
+  nombre: string;
+  slug: string;
+}
+
 export interface Property {
   id: string;
   ciudad: Ciudad;
@@ -83,3 +115,24 @@ export function propertyDescription(p: Property): string {
 }
 
 export const WHATSAPP = "5492215551234";
+
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://comesana-propiedades.vercel.app";
+
+export function createPropertySlug(p: Property): string {
+  const normalized = p.direccion
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  const slug = `${normalized}-${p.ciudad.toLowerCase().replace(/\s+/g, "-")}-${p.id}`;
+  return slug;
+}
+
+export function findPropertyBySlug(properties: Property[], slug: string): Property | undefined {
+  const parts = slug.split("-");
+  const id = parts[parts.length - 1];
+  return properties.find((p) => p.id === id);
+}

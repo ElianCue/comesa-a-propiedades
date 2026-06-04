@@ -152,6 +152,27 @@ model PropertyDetail {
   @@map("property_details")
 }
 
+model PropertyAlert {
+  id          String   @id @default(cuid())
+  email       String
+  nombre      String?
+  ciudad      String?
+  operacion   String?
+  tipo        String?
+  barrio      String?
+  precio_min  Int?
+  precio_max  Int?
+  ambientes   Int?
+  moneda      String?
+  dormitorios Int?
+  active      Boolean  @default(true)
+  notified    Boolean  @default(false)
+  notified_at DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  @@map("property_alerts")
+}
+
 model Inquiry {
   id          String   @id @default(cuid())
   property_id String

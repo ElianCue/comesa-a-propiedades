@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Bed, Bath, Maximize2, MapPin } from "lucide-react";
-import { formatPrice, type Property, createPropertySlug } from "@/lib/properties";
+import { formatPriceFromProperty, type Property, createPropertySlug } from "@/lib/properties";
 
 interface Props {
   p: Property;
@@ -46,7 +46,7 @@ export function PropertyCard({ p, variant = "grid" }: Props) {
 
         <div className="flex flex-1 flex-col justify-center gap-2 p-5">
           <div className="font-display text-xl font-bold tracking-tight text-[oklch(0.78_0.13_80)]">
-            {formatPrice(p)}
+            {formatPriceFromProperty(p)}
           </div>
           <div className="text-sm font-medium text-foreground">{p.direccion}</div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -128,7 +128,7 @@ export function PropertyCard({ p, variant = "grid" }: Props) {
 
         <div className="flex flex-1 flex-col gap-2 p-5">
         <div className="font-display text-xl font-bold tracking-tight text-[oklch(0.78_0.13_80)]">
-          {formatPrice(p)}
+          {formatPriceFromProperty(p)}
         </div>
         <div className="text-sm font-medium text-foreground">{p.direccion}</div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">

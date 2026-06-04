@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api-client";
 import { MessageSquare, Mail, Phone, Eye, EyeOff, Trash2, Loader2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 interface InquiryData {
   id: string;
@@ -23,6 +24,9 @@ interface InquiryData {
 export default function AdminConsultas() {
   const [inquiries, setInquiries] = useState<InquiryData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -46,13 +50,18 @@ export default function AdminConsultas() {
     }
   };
 
-  const del = async (id: string) => {
-    if (!confirm("¿Eliminar consulta?")) return;
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
     try {
-      await api.delete(`/api/inquiries/${id}`);
+      await api.delete(`/api/inquiries/${deleteId}`);
       load();
+      setDeleteConfirmOpen(false);
+      setDeleteId(null);
     } catch (e: any) {
       alert(e.message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -183,7 +192,7 @@ export default function AdminConsultas() {
                     {inq.leido ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                   <button
-                    onClick={() => del(inq.id)}
+                    onClick={() => { setDeleteId(inq.id); setDeleteConfirmOpen(true); }}
                     className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
                     style={{ color: "oklch(0.5 0.01 285)" }}
                     onMouseEnter={(e) => {
@@ -204,6 +213,17 @@ export default function AdminConsultas() {
           ))}
         </div>
       )}
+      
+      {/* Delete Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        onOpenChange={(open) => { setDeleteConfirmOpen(open); if (!open) setDeleteId(null); }}
+        title="¿Eliminar consulta?"
+        description="Esta acción no se puede deshacer. ¿Está seguro de que desea eliminar esta consulta?"
+        onConfirm={handleDeleteConfirm}
+        loading={deleting}
+        successMessage="Consulta eliminada correctamente"
+      />
     </>
   );
 }

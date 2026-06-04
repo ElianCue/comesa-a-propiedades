@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { NotFoundError } from "../lib/errors";
 import type { CreatePropertyInput, UpdatePropertyInput } from "../validators/property.validator";
+import { matchAndNotify } from "./alert.service";
 
 const propertyInclude = {
   city: { select: { nombre: true, slug: true } },
@@ -20,11 +21,11 @@ const listingInclude = {
   property_type: { select: { nombre: true, slug: true } },
   operation: { select: { nombre: true } },
   currency: { select: { codigo: true } },
-  photos: { select: { url: true, orden: true }, orderBy: { orden: "asc" as const }, take: 1 },
+  photos: { select: { url: true, orden: true }, orderBy: { orden: "asc" as const } },
   amenities: { select: { amenity: { select: { nombre: true } } } },
 };
 
-function serializeProperty(p: any) {
+export function serializeProperty(p: any) {
   const amenityNames = p.amenities.map((pa: any) => pa.amenity.nombre);
 
   // Group detalles by seccion
@@ -82,19 +83,46 @@ async function resolveLookups(input: {
   operacion: string;
   moneda: string;
 }) {
-  const city = await prisma.city.findUniqueOrThrow({ where: { nombre: input.ciudad } });
-  const barrio = await prisma.barrio.findFirstOrThrow({ where: { nombre: input.barrio, city_id: city.id } });
-  const property_type = await prisma.propertyType.findUniqueOrThrow({ where: { nombre: input.tipo } });
-  const operation = await prisma.operation.findUniqueOrThrow({ where: { nombre: input.operacion } });
-  const currency = await prisma.currency.findUniqueOrThrow({ where: { codigo: input.moneda } });
+  try {
+    const city = await prisma.city.findUnique({ where: { nombre: input.ciudad } });
+    if (!city) {
+      throw new NotFoundError(`Ciudad "${input.ciudad}" no encontrada`);
+    }
+    
+    const barrio = await prisma.barrio.findFirst({ where: { nombre: input.barrio, city_id: city.id } });
+    if (!barrio) {
+      throw new NotFoundError(`Barrio "${input.barrio}" no encontrado en la ciudad "${input.ciudad}"`);
+    }
+    
+    const property_type = await prisma.propertyType.findUnique({ where: { nombre: input.tipo } });
+    if (!property_type) {
+      throw new NotFoundError(`Tipo de propiedad "${input.tipo}" no encontrado`);
+    }
+    
+    const operation = await prisma.operation.findUnique({ where: { nombre: input.operacion } });
+    if (!operation) {
+      throw new NotFoundError(`Operación "${input.operacion}" no encontrada`);
+    }
+    
+    const currency = await prisma.currency.findUnique({ where: { codigo: input.moneda } });
+    if (!currency) {
+      throw new NotFoundError(`Moneda "${input.moneda}" no encontrada`);
+    }
 
-  return {
-    city_id: city.id,
-    barrio_id: barrio.id,
-    property_type_id: property_type.id,
-    operation_id: operation.id,
-    currency_id: currency.id,
-  };
+    return {
+      city_id: city.id,
+      barrio_id: barrio.id,
+      property_type_id: property_type.id,
+      operation_id: operation.id,
+      currency_id: currency.id,
+    };
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      throw error; // Re-throw our custom NotFoundError
+    }
+    // If it's any other error, wrap it in a NotFoundError with a generic message
+    throw new NotFoundError("Error al buscar datos de referencia");
+  }
 }
 
 export class PropertyService {
@@ -138,7 +166,7 @@ export class PropertyService {
       where.permuta = filters.permuta;
     }
 
-    const take = Math.min(filters.limit, 50);
+    const take = Math.min(filters.limit, 200);
 
     // Use a lightweight include for listing to reduce payload and DB work
     const [properties, total] = await Promise.all([
@@ -167,12 +195,18 @@ export class PropertyService {
         operacion: p.operation?.nombre,
         direccion: p.direccion,
         precio: p.precio,
-        moneda: p.currency?.codigo,
+        moneda: p.currency?.codigo || "USD",
         m2Totales: Number(p.m2_totales),
         m2Cubiertos: Number(p.m2_cubiertos),
+        m2Terreno: p.m2_terreno ? Number(p.m2_terreno) : undefined,
+        m2Descubierta: p.m2_descubierta ? Number(p.m2_descubierta) : undefined,
         ambientes: p.ambientes,
         dormitorios: p.dormitorios,
         banos: p.banos,
+        cantPlantas: p.cant_plantas || undefined,
+        piso: p.piso,
+        antiguedad: p.antiguedad,
+        expensas: p.expensas || undefined,
         cochera: amenityNames.includes("Cochera"),
         balcon: amenityNames.includes("Balcón"),
         jardin: amenityNames.includes("Jardín"),
@@ -184,7 +218,8 @@ export class PropertyService {
         lat: p.lat,
         lng: p.lng,
         activo: p.activo,
-        fotos: ((p.photos || []).map((ph: any) => ph.url).filter(Boolean).slice(0, 1)) || [],
+        amenities: amenityNames,
+        fotos: ((p.photos || []).map((ph: any) => ph.url).filter(Boolean)) || [],
       };
     };
 
@@ -247,7 +282,11 @@ export class PropertyService {
       include: propertyInclude,
     });
 
-    return serializeProperty(property);
+    const serialized = serializeProperty(property);
+    matchAndNotify(serialized).catch((err) =>
+      console.error("[property] Error matching alerts:", err)
+    );
+    return serialized;
   }
 
   async update(id: string, input: UpdatePropertyInput) {

@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { PropertyDrawer } from "@/components/admin/PropertyDrawer";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { api } from "@/lib/api-client";
-import { Pencil, Trash2, Plus, Loader2 } from "lucide-react";
+import { ExternalLink, Pencil, Trash2, Plus, Loader2, Search, SlidersHorizontal, RotateCcw, QrCode, FileText } from "lucide-react";
+import { createPropertySlug } from "@/lib/properties";
+import { generateQRPDF, generateCartelPDF } from "@/lib/pdf";
 
 interface PropertyData {
   id: string;
@@ -16,11 +19,15 @@ interface PropertyData {
   precio: number;
   m2Totales: number;
   m2Cubiertos: number;
+  m2Terreno?: number;
+  m2Descubierta?: number;
   ambientes: number;
   dormitorios: number;
   banos: number;
+  cantPlantas?: number;
   piso?: string;
   antiguedad?: string;
+  expensas?: string;
   descripcion: string;
   lat: number;
   lng: number;
@@ -29,17 +36,35 @@ interface PropertyData {
   activo: boolean;
   aptoBanco: boolean;
   permuta: boolean;
+  cochera: boolean;
+  balcon: boolean;
+  jardin: boolean;
+  parrilla: boolean;
+  pileta: boolean;
 }
 
 export default function AdminProperties() {
   const [properties, setProperties] = useState<PropertyData[]>([]);
   const [drawer, setDrawer] = useState<PropertyData | "new" | null>(null);
   const [loadKey, setLoadKey] = useState(0);
-  const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletingLoading, setDeletingLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+
+  // Filters
+  const [fCiudad, setFCiudad] = useState("");
+  const [fOperacion, setFOperacion] = useState("");
+  const [fTipo, setFTipo] = useState("");
+  const [fEstado, setFEstado] = useState<"" | "activo" | "inactivo">("");
+  const [fSearch, setFSearch] = useState("");
+
+  const [showFilters, setShowFilters] = useState(false);
 
   const load = useCallback(async () => {
     try {
-      const res = await api.get<any>("/api/properties?limit=50");
+      const res = await api.get<any>("/api/properties?limit=200");
       setProperties(res);
     } catch {
       setProperties([]);
@@ -48,32 +73,71 @@ export default function AdminProperties() {
 
   useEffect(() => { load(); }, [loadKey]);
 
-  const stats = {
-    total: properties.length,
-    activas: properties.filter((p) => p.activo).length,
-    venta: properties.filter((p) => p.operacion === "Venta").length,
-    alquiler: properties.filter((p) => p.operacion === "Alquiler").length,
+  const filtered = useMemo(() => {
+    return properties.filter((p) => {
+      if (fCiudad && p.ciudad !== fCiudad) return false;
+      if (fOperacion && p.operacion !== fOperacion) return false;
+      if (fTipo && p.tipo !== fTipo) return false;
+      if (fEstado === "activo" && !p.activo) return false;
+      if (fEstado === "inactivo" && p.activo) return false;
+      if (fSearch) {
+        const q = fSearch.toLowerCase();
+        if (!p.direccion.toLowerCase().includes(q) && !p.barrio.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [properties, fCiudad, fOperacion, fTipo, fEstado, fSearch]);
+
+  const tipos = useMemo(() => [...new Set(properties.map((p) => p.tipo))], [properties]);
+  const ciudades = useMemo(() => [...new Set(properties.map((p) => p.ciudad))], [properties]);
+
+  const activeFilterCount = [fCiudad, fOperacion, fTipo, fEstado].filter(Boolean).length + (fSearch ? 1 : 0);
+
+  const clearFilters = () => {
+    setFCiudad("");
+    setFOperacion("");
+    setFTipo("");
+    setFEstado("");
+    setFSearch("");
   };
 
-  const del = async (id: string) => {
-    if (!confirm("¿Eliminar propiedad?")) return;
-    setDeleting(id);
+  const handleDelete = async (id: string) => {
+    setConfirmDeleteId(id);
+    setConfirmDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!confirmDeleteId) return;
+    setDeletingLoading(true);
+    setDeleteError(null);
     try {
-      await api.delete(`/api/properties/${id}`);
+      await api.delete(`/api/properties/${confirmDeleteId}`);
       setLoadKey((k) => k + 1);
+      setDeleteSuccess(true);
+      setTimeout(() => {
+        setConfirmDeleteOpen(false);
+        setConfirmDeleteId(null);
+        setDeleteSuccess(false);
+        setDeletingLoading(false);
+      }, 1500);
     } catch (e: any) {
-      alert(e.message);
+      setDeleteError(e.message || "Error al eliminar");
+      setDeletingLoading(false);
     } finally {
-      setDeleting(null);
+      setTimeout(() => {
+        setConfirmDeleteOpen(false);
+        setConfirmDeleteId(null);
+      }, 2000);
     }
   };
 
-  const statCards = [
-    { label: "Total", value: stats.total },
-    { label: "Activas", value: stats.activas },
-    { label: "En venta", value: stats.venta },
-    { label: "En alquiler", value: stats.alquiler },
-  ];
+  const handleCancelDelete = () => {
+    setConfirmDeleteOpen(false);
+    setConfirmDeleteId(null);
+    setDeleteError(null);
+    setDeleteSuccess(false);
+    setDeletingLoading(false);
+  };
 
   return (
     <>
@@ -86,57 +150,133 @@ export default function AdminProperties() {
             Propiedades
           </h1>
           <p className="mt-1 text-sm" style={{ color: "oklch(0.5 0.01 285)" }}>
-            {properties.length} propiedades cargadas
+            {filtered.length} de {properties.length} propiedades
           </p>
         </div>
-        <button
-          onClick={() => setDrawer("new")}
-          className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all"
-          style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
-          onMouseEnter={(e) => e.currentTarget.style.filter = "brightness(1.1)"}
-          onMouseLeave={(e) => e.currentTarget.style.filter = "none"}
-        >
-          <Plus className="h-4 w-4" />
-          Nueva
-        </button>
-      </div>
-
-      {/* Stats */}
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((s, i) => (
-          <div
-            key={s.label}
-            className="animate-slide-up rounded-xl border p-5 transition-all"
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all"
             style={{
-              animationDelay: `${0.1 + i * 0.08}s`,
-              background: "oklch(0.12 0.005 285)",
-              borderColor: "oklch(0.18 0.005 285)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "var(--gold)";
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "oklch(0.18 0.005 285)";
-              e.currentTarget.style.transform = "none";
+              borderColor: showFilters ? "var(--gold)" : "oklch(0.22 0.005 285)",
+              color: showFilters ? "var(--gold)" : "oklch(0.6 0.01 285)",
+              background: showFilters ? "oklch(0.78 0.13 80 / 0.08)" : "transparent",
             }}
           >
-            <div className="text-[10px] font-semibold uppercase tracking-[0.15em]" style={{ color: "oklch(0.5 0.01 285)" }}>
-              {s.label}
-            </div>
-            <div
-              className="mt-2 font-display text-4xl font-bold tracking-tight"
-              style={{ color: "var(--gold)", fontFamily: "var(--font-display)" }}
-            >
-              {s.value}
-            </div>
-          </div>
-        ))}
+            <SlidersHorizontal className="h-4 w-4" />
+            Filtros
+            {activeFilterCount > 0 && (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}>
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setDrawer("new")}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all"
+            style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
+            onMouseEnter={(e) => e.currentTarget.style.filter = "brightness(1.1)"}
+            onMouseLeave={(e) => e.currentTarget.style.filter = "none"}
+          >
+            <Plus className="h-4 w-4" />
+            Nueva
+          </button>
+        </div>
       </div>
+
+      {/* Filters */}
+      {showFilters && (
+        <div
+          className="mt-6 rounded-xl border p-5 animate-fade-in"
+          style={{ borderColor: "oklch(0.18 0.005 285)", background: "oklch(0.1 0.005 285)" }}
+        >
+          <div className="flex flex-wrap items-end gap-3">
+            <div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Ciudad</div>
+              <select
+                value={fCiudad}
+                onChange={(e) => setFCiudad(e.target.value)}
+                className="rounded-lg border px-3 py-2 text-xs"
+                style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)", minWidth: "140px" }}
+              >
+                <option value="">Todas</option>
+                {ciudades.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Operación</div>
+              <select
+                value={fOperacion}
+                onChange={(e) => setFOperacion(e.target.value)}
+                className="rounded-lg border px-3 py-2 text-xs"
+                style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)", minWidth: "120px" }}
+              >
+                <option value="">Todas</option>
+                <option value="Venta">Venta</option>
+                <option value="Alquiler">Alquiler</option>
+              </select>
+            </div>
+            <div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Tipo</div>
+              <select
+                value={fTipo}
+                onChange={(e) => setFTipo(e.target.value)}
+                className="rounded-lg border px-3 py-2 text-xs"
+                style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)", minWidth: "120px" }}
+              >
+                <option value="">Todos</option>
+                {tipos.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Estado</div>
+              <select
+                value={fEstado}
+                onChange={(e) => setFEstado(e.target.value as "" | "activo" | "inactivo")}
+                className="rounded-lg border px-3 py-2 text-xs"
+                style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)", minWidth: "120px" }}
+              >
+                <option value="">Todos</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Buscar</div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" style={{ color: "oklch(0.5 0.01 285)" }} />
+                <input
+                  value={fSearch}
+                  onChange={(e) => setFSearch(e.target.value)}
+                  placeholder="Dirección o barrio..."
+                  className="w-full rounded-lg border py-2 pl-9 pr-3 text-xs"
+                  style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)" }}
+                />
+              </div>
+            </div>
+            {activeFilterCount > 0 && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors"
+                style={{ color: "oklch(0.5 0.01 285)" }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "oklch(0.9 0 0)"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "oklch(0.5 0.01 285)"}
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Limpiar
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div
-        className="mt-8 overflow-x-auto rounded-xl border"
+        className="mt-6 overflow-x-auto rounded-xl border"
         style={{ borderColor: "oklch(0.18 0.005 285)" }}
       >
         <table className="w-full text-sm" style={{ minWidth: "640px" }}>
@@ -154,7 +294,7 @@ export default function AdminProperties() {
             </tr>
           </thead>
           <tbody>
-            {properties.map((p, i) => (
+            {filtered.map((p, i) => (
               <tr
                 key={p.id}
                 className="animate-fade-in border-t transition-all"
@@ -205,6 +345,56 @@ export default function AdminProperties() {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
+                    <a
+                      href={`/propiedad/${createPropertySlug(p as any)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Ver en la web"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+                      style={{ color: "oklch(0.5 0.01 285)" }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "oklch(0.18 0.005 285)";
+                        e.currentTarget.style.color = "oklch(0.78 0.13 80)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                      }}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                    <button
+                      onClick={() => generateQRPDF(p as any)}
+                      title="Descargar QR"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+                      style={{ color: "oklch(0.5 0.01 285)" }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "oklch(0.18 0.005 285)";
+                        e.currentTarget.style.color = "oklch(0.78 0.13 80)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                      }}
+                    >
+                      <QrCode className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => generateCartelPDF(p as any)}
+                      title="Descargar cartel"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+                      style={{ color: "oklch(0.5 0.01 285)" }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "oklch(0.18 0.005 285)";
+                        e.currentTarget.style.color = "oklch(0.78 0.13 80)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                      }}
+                    >
+                      <FileText className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => setDrawer(p)}
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
@@ -221,8 +411,8 @@ export default function AdminProperties() {
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => del(p.id)}
-                      disabled={deleting === p.id}
+                      onClick={() => handleDelete(p.id)}
+                      disabled={deletingLoading}
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
                       style={{ color: "oklch(0.5 0.01 285)" }}
                       onMouseEnter={(e) => {
@@ -234,7 +424,7 @@ export default function AdminProperties() {
                         e.currentTarget.style.color = "oklch(0.5 0.01 285)";
                       }}
                     >
-                      {deleting === p.id ? (
+                      {deletingLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <Trash2 className="h-4 w-4" />
@@ -247,9 +437,9 @@ export default function AdminProperties() {
           </tbody>
         </table>
 
-        {!properties.length && (
+        {!filtered.length && (
           <div className="flex items-center justify-center py-20 text-sm" style={{ color: "oklch(0.45 0.01 285)" }}>
-            No hay propiedades cargadas
+            {properties.length === 0 ? "No hay propiedades cargadas" : "Sin resultados para los filtros seleccionados"}
           </div>
         )}
       </div>
@@ -261,6 +451,16 @@ export default function AdminProperties() {
           onSaved={() => setLoadKey((k) => k + 1)}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={confirmDeleteOpen}
+        onOpenChange={setConfirmDeleteOpen}
+        title="¿Eliminar propiedad?"
+        description="Esta acción no se puede deshacer. ¿Está seguro de que desea eliminar esta propiedad?"
+        onConfirm={handleConfirmDelete}
+        loading={deletingLoading}
+        successMessage="Propiedad eliminada correctamente"
+      />
     </>
   );
 }

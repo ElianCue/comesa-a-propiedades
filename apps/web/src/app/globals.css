@@ -27,6 +27,43 @@
   --admin-fade-in: fadeIn 0.5s ease forwards;
 }
 
+/* Amenity chips used in admin PropertyDrawer */
+.admin-amenity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: var(--admin-input-bg);
+  border: 1px solid var(--admin-input-border);
+  color: var(--admin-text);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.admin-amenity:active { transform: translateY(1px); }
+.admin-amenity.active {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--admin-active-text);
+}
+.admin-amenity-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  background: var(--admin-input-border);
+  color: transparent;
+  font-weight: 700;
+  transition: background 120ms ease, color 120ms ease;
+}
+.admin-amenity.active .admin-amenity-indicator {
+  background: var(--gold);
+  color: var(--admin-text);
+}
+
 @keyframes slideIn {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }

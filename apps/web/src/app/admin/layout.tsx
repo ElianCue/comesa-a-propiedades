@@ -65,7 +65,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { href: "/admin", label: "Propiedades", icon: Building2 },
-    { href: "/admin/consultas", label: "Consultas", icon: MessageSquare },
   ];
 
   return (
@@ -108,7 +107,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Sidebar */}
       <aside
-        className="fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r transition-transform duration-300 lg:translate-x-0"
+        className="fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r transition-transform duration-300"
         style={{
           background: "oklch(0.1 0.005 285)",
           borderColor: "oklch(0.18 0.005 285)",
@@ -167,13 +166,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main */}
-      <div className="lg:pl-60">
-        {/* Top bar mobile */}
+      <div>
+        {/* Top bar */}
         <div
-          className="flex h-16 items-center gap-3 border-b px-5 lg:hidden"
+          className="flex h-16 items-center gap-3 border-b px-5"
           style={{ borderColor: "oklch(0.18 0.005 285)" }}
         >
-          <button onClick={() => setSidebarOpen(true)}>
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="flex items-center justify-center"
+          >
             <Menu className="h-5 w-5" style={{ color: "oklch(0.6 0.01 285)" }} />
           </button>
           <div

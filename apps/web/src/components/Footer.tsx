@@ -20,7 +20,7 @@ export function Footer() {
               />
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Tu hogar, nuestra misión. Propiedades en La Plata y su zona (Tolosa, Gonnet, City Bell, Villa Elisa, Los Hornos, San Carlos, etc.) y Mar del Plata, con asesoramiento profesional.
+              Propiedades en La Plata y Mar del Plata. Venta y alquiler con asesoramiento profesional.
             </p>
           </div>
 
@@ -60,9 +60,7 @@ export function Footer() {
               <Link href="/mapa" className="transition hover:text-foreground py-1.5">
                 Mapa de propiedades
               </Link>
-              <Link href="/admin" className="transition hover:text-foreground py-1.5">
-                Panel Admin
-              </Link>
+
             </div>
           </div>
 
@@ -93,13 +91,10 @@ export function Footer() {
 
         <div className="mt-12 border-t border-border pt-8 text-center">
           <p className="text-xs text-muted-foreground/60">
-            <span className="inline-flex items-center gap-2">
-              <span className="text-foreground/80">Paola Comesaña</span>
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ background: "oklch(0.78 0.13 80 / 0.15)", color: "oklch(0.78 0.13 80)" }}>
-                Colegiada
+              <span className="inline-flex items-center gap-2">
+                <span className="text-foreground/80">Paola Comesaña</span>
+                <span className="font-semibold text-xs" style={{ color: "oklch(0.78 0.13 80)" }}>Col. 7470</span>
               </span>
-              <span className="font-semibold text-xs" style={{ color: "oklch(0.78 0.13 80)" }}>Col. 7470</span>
-            </span>
           </p>
           <p className="mt-1 text-xs text-muted-foreground/60">
             &copy; {new Date().getFullYear()} Comensaña Propiedades. Todos los

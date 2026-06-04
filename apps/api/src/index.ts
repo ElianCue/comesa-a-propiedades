@@ -10,6 +10,7 @@ import { authRoutes } from "./routes/auth.routes";
 import { propertyRoutes } from "./routes/property.routes";
 import { inquiryRoutes } from "./routes/inquiry.routes";
 import { lookupRoutes } from "./routes/lookup.routes";
+import { alertRoutes } from "./routes/alert.routes";
 import { logger } from "./lib/logger";
 import { env } from "./lib/env";
 import { prisma } from "./lib/prisma";
@@ -31,9 +32,9 @@ app.disable("etag");
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requests per IP per windowMs
-  message: "Demasiadas solicitudes desde esta dirección IP",
+  windowMs: 15 * 60 * 1000,
+  max: env.nodeEnv === "production" ? 100 : 1000,
+  message: { status: "error", message: "Demasiadas solicitudes desde esta dirección IP" },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -42,7 +43,7 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
   skipSuccessfulRequests: true,
-  message: "Demasiados intentos de login. Intenta más tarde.",
+  message: { status: "error", message: "Demasiados intentos de login. Intenta más tarde." },
 });
 
 // Middleware global
@@ -74,6 +75,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/lookup", lookupRoutes);
+app.use("/api/property-alerts", alertRoutes);
 
 // Health check
 app.get("/api/health", async (_req, res) => {

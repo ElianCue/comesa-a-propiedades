@@ -1,6 +1,7 @@
 import { parse } from "csv-parse/sync";
 import { readFileSync, existsSync } from "fs";
 import { PrismaClient } from "@prisma/client";
+import { matchAndNotify } from "../src/services/alert.service";
 
 const prisma = new PrismaClient();
 
@@ -157,14 +158,17 @@ async function main() {
         continue;
       }
 
+      const barrioNombre =
+        (mapped.barrio as string) === "Sin barrio" || !mapped.barrio
+          ? "Centro"
+          : (mapped.barrio as string);
       const barrioRec = barrios.find(
-        (b) =>
-          b.nombre === (mapped.barrio as string) && b.city_id === city.id
+        (b) => b.nombre === barrioNombre && b.city_id === city.id
       );
       if (!barrioRec) {
         result.errors.push({
           fila,
-          motivo: `Barrio no encontrado: ${mapped.barrio} en ${mapped.ciudad}`,
+          motivo: `Barrio no encontrado: ${barrioNombre} en ${mapped.ciudad}`,
         });
         result.skipped++;
         continue;
@@ -376,6 +380,44 @@ async function main() {
 
         result.imported++;
         process.stdout.write(".");
+
+        matchAndNotify({
+          ciudad: city.nombre,
+          barrio: barrioRec.nombre,
+          tipo: tipo.nombre,
+          operacion: op.nombre,
+          moneda: cur.codigo,
+          direccion: mapped.direccion as string,
+          precio: Number(mapped.precio),
+          m2Totales: Number(mapped.m2Totales),
+          m2Cubiertos: Number(mapped.m2Cubiertos),
+          m2Terreno: mapped.m2Terreno ? Number(mapped.m2Terreno) : undefined,
+          m2Descubierta: mapped.m2Descubierta ? Number(mapped.m2Descubierta) : undefined,
+          ambientes: Number(mapped.ambientes),
+          dormitorios: Number(mapped.dormitorios),
+          banos: Number(mapped.banos),
+          cantPlantas: mapped.cantPlantas ? Number(mapped.cantPlantas) : undefined,
+          piso: (mapped.piso as string) || undefined,
+          antiguedad: (mapped.antiguedad as string) || undefined,
+          expensas: (mapped.expensas as string) || undefined,
+          descripcion: (mapped.descripcion as string) || "",
+          lat: (mapped.lat as number) ?? -34.9215,
+          lng: (mapped.lng as number) ?? -57.9545,
+          cochera: !!mapped.cochera,
+          balcon: !!mapped.balcon,
+          jardin: !!mapped.jardin,
+          parrilla: !!mapped.parrilla,
+          pileta: !!mapped.pileta,
+          aptoBanco: !!mapped.aptoBanco,
+          permuta: !!mapped.permuta,
+          fotos,
+          amenities: [],
+          detalles: {},
+          activo: true,
+          id: "",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }).catch(() => {});
       }
     } catch (e: any) {
       result.errors.push({ fila, motivo: e.message });
