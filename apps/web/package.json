@@ -7,9 +7,9 @@
   },
   "scripts": {
     "dev": "node ./node_modules/next/dist/bin/next dev -p 3000",
-    "build": "pnpm build --filter @comesana/shared && node ./node_modules/next/dist/bin/next build",
+    "build": "pnpm --filter @comesana/shared run build && node ./node_modules/next/dist/bin/next build",
     "start": "node ./node_modules/next/dist/bin/next start",
-    "postinstall": "pnpm build --filter @comesana/shared && prisma generate",
+    "postinstall": "pnpm --filter @comesana/shared run build && prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio"
