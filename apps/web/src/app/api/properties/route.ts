@@ -7,7 +7,7 @@ import { propertyQuerySchema, createPropertySchema } from "@/lib/api/validators/
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
-    const filters = await validate(propertyQuerySchema, {
+    const raw: Record<string, string | null> = {
       ciudad: searchParams.get("ciudad"),
       operacion: searchParams.get("operacion"),
       tipo: searchParams.get("tipo"),
@@ -15,7 +15,11 @@ export async function GET(request: NextRequest) {
       precioMax: searchParams.get("precioMax"),
       cursor: searchParams.get("cursor"),
       limit: searchParams.get("limit"),
-    });
+    };
+    const cleaned = Object.fromEntries(
+      Object.entries(raw).filter(([_, v]) => v !== null)
+    );
+    const filters = await validate(propertyQuerySchema, cleaned);
 
     const result = await propertyService.list({
       ...filters,
