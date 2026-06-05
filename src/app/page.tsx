@@ -105,7 +105,7 @@ export default function HomePage() {
               <div className="absolute left-1/2 top-1/2 z-10 w-[130px] md:w-[170px] -translate-x-1/2 -translate-y-1/2 drop-shadow-xl">
                 <Image
                   src={logo}
-                  alt="Comensaña Propiedades logo"
+                  alt="Comesaña Propiedades logo"
                   width={340}
                   height={340}
                   className="w-full h-auto"
@@ -116,7 +116,7 @@ export default function HomePage() {
               <div className="absolute left-1/2 top-1/2 z-10 w-[220px] md:w-[300px] -translate-x-1/2 -translate-y-1/2 blur-[2px] opacity-60">
                 <Image
                   src={logo}
-                  alt="Comensaña Propiedades logo difuminado"
+                  alt="Comesaña Propiedades logo difuminado"
                   width={340}
                   height={340}
                   className="w-full h-auto"

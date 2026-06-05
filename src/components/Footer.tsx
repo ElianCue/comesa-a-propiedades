@@ -15,7 +15,7 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <Image
                 src={logo}
-                alt="Comensaña Propiedades"
+                alt="Comesaña Propiedades"
                 className="h-10 w-auto"
               />
             </div>
@@ -93,7 +93,7 @@ export function Footer() {
 
         <div className="mt-12 border-t border-border pt-8 text-center">
           <p className="text-xs text-muted-foreground/60">
-            &copy; {new Date().getFullYear()} Comensaña Propiedades. Todos los
+            &copy; {new Date().getFullYear()} Comesaña Propiedades. Todos los
             derechos reservados.
           </p>
         </div>

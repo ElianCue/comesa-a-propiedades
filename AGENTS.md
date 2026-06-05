@@ -1,4 +1,4 @@
-# AGENTS.md — Comensaña Propiedades
+# AGENTS.md — Comesaña Propiedades
 
 ## Stack
 

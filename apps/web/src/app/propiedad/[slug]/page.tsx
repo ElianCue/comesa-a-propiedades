@@ -207,7 +207,7 @@ export default function PropertyPage({ params }: Props) {
   }
 
   const waText = encodeURIComponent(
-    `Hola! Me interesa la propiedad en ${p.direccion}, ${p.barrio} (${p.ciudad}) publicada en Comensaña Propiedades. Precio: ${formatPriceFromProperty(p)}`
+    `Hola! Me interesa la propiedad en ${p.direccion}, ${p.barrio} (${p.ciudad}) publicada en Comesaña Propiedades. Precio: ${formatPriceFromProperty(p)}`
   );
 
   const amenityIcons = [
@@ -584,7 +584,7 @@ export default function PropertyPage({ params }: Props) {
                   CP
                 </div>
                 <div>
-                  <div className="font-semibold">Comensaña Propiedades</div>
+                  <div className="font-semibold">Comesaña Propiedades</div>
                   <div className="text-xs text-muted-foreground">
                     +54 9 221 555 1234
                   </div>

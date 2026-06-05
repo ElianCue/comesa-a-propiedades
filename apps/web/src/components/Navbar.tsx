@@ -33,7 +33,7 @@ export function Navbar() {
           <Link href="/" className="group flex items-center gap-3">
             <Image
               src={logo}
-              alt="Comensaña Propiedades"
+              alt="Comesaña Propiedades"
               className="h-8 w-auto transition duration-200 group-hover:scale-105"
               priority
             />

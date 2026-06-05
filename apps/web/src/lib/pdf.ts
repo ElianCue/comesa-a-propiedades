@@ -34,7 +34,7 @@ export async function generateQRPDF(p: Property) {
 
   doc.setFontSize(8);
   doc.setTextColor(160);
-  doc.text("Comensaña Propiedades — La Plata & Mar del Plata", cx, 278, { align: "center" });
+  doc.text("Comesaña Propiedades — La Plata & Mar del Plata", cx, 278, { align: "center" });
   doc.text(`WhatsApp: wa.me/${WHATSAPP}`, cx, 283, { align: "center" });
 
   doc.save(`QR-${p.direccion.replace(/[\s,/]+/g, "-")}.pdf`);
@@ -252,7 +252,7 @@ export async function generateCartelPDF(p: Property) {
   doc.setTextColor(40, 40, 40);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.text("Comensaña Propiedades", infoX + 3, y + 8);
+  doc.text("Comesaña Propiedades", infoX + 3, y + 8);
   doc.setTextColor(130, 130, 130);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);

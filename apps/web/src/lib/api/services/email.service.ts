@@ -12,7 +12,7 @@ export async function sendPropertyAlert(
     const propertyUrl = `${SITE_URL}/propiedad/${createPropertySlug(property)}`;
 
     await resend.emails.send({
-      from: `Comensaña Propiedades <${FROM}>`,
+      from: `Comesaña Propiedades <${FROM}>`,
       to,
       subject: `Nueva propiedad: ${propertyTitle(property)}`,
       html: `
@@ -26,7 +26,7 @@ export async function sendPropertyAlert(
                 <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#1a1a22;border-radius:20px;overflow:hidden">
                   <tr>
                     <td style="padding:32px 32px 0;text-align:center">
-                      <h1 style="margin:0;font-family:Playfair Display,Georgia,serif;font-size:22px;font-weight:700;color:#f5e6c8;letter-spacing:-0.3px">Comensaña Propiedades</h1>
+                      <h1 style="margin:0;font-family:Playfair Display,Georgia,serif;font-size:22px;font-weight:700;color:#f5e6c8;letter-spacing:-0.3px">Comesaña Propiedades</h1>
                       <p style="margin:6px 0 0;font-size:13px;color:#8a8a9a">Nueva propiedad disponible</p>
                     </td>
                   </tr>

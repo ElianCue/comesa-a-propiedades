@@ -1,4 +1,4 @@
-# Comensaña Propiedades
+# Comesaña Propiedades
 
 Inmobiliaria digital con cobertura en La Plata y Mar del Plata.
 

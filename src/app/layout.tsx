@@ -14,7 +14,7 @@ const sans = DM_Sans({
   variable: "--font-sans",
 });
 
-const title = "Comensaña Propiedades | Casas y Departamentos en La Plata y Mar del Plata";
+const title = "Comesaña Propiedades | Casas y Departamentos en La Plata y Mar del Plata";
 const description =
   "Encontrá tu hogar en La Plata y Mar del Plata. Casas, departamentos, PH y más. Asesoramiento profesional personalizado — venta y alquiler.";
 
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     description,
     type: "website",
     locale: "es_AR",
-    siteName: "Comensaña Propiedades",
+    siteName: "Comesaña Propiedades",
   },
   twitter: {
     card: "summary_large_image",
@@ -44,7 +44,7 @@ export default function RootLayout({
   const schema = {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
-    name: "Comensaña Propiedades",
+    name: "Comesaña Propiedades",
     description:
       "Inmobiliaria con cobertura en La Plata y Mar del Plata. Venta y alquiler de casas, departamentos, PH y más.",
     url: SITE_URL,

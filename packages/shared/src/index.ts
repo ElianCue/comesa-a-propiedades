@@ -107,7 +107,7 @@ export function formatPriceFromProperty(p: Property): string {
 
 export function propertyTitle(p: Property): string {
   const op = p.operacion === "Venta" ? "en Venta" : "en Alquiler";
-  return `${p.tipo} ${op} en ${p.barrio}, ${p.ciudad} — Comensaña Propiedades`;
+  return `${p.tipo} ${op} en ${p.barrio}, ${p.ciudad} — Comesaña Propiedades`;
 }
 
 export function propertyDescription(p: Property): string {

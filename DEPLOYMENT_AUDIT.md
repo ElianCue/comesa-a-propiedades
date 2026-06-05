@@ -1,4 +1,4 @@
-# Comensaña Propiedades - Deployment Readiness Audit
+# Comesaña Propiedades - Deployment Readiness Audit
 
 **Date:** June 2, 2026  
 **Repository:** Monorepo with 2 apps (web, api) + 1 shared package  
