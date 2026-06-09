@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,9 +8,11 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PropertyCard } from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useProperties";
-import { CIUDADES, getBarrios, WHATSAPP, type Ciudad } from "@/lib/properties";
-import { Search, Compass, MessageCircle, Shield, MapPin, ChevronRight, BarChart3, BadgeCheck, Target } from "lucide-react";
+import { api } from "@/lib/api-client";
+import { CIUDADES, getBarrios, WHATSAPP, WHATSAPP_VISITA, type Ciudad } from "@/lib/properties";
+import { Search, Compass, MessageCircle, Shield, MapPin, ChevronRight, BarChart3, BadgeCheck, Target, Navigation } from "lucide-react";
 import hero from "@/assets/images/Hero.png";
+import logo from "@/assets/images/Logo2.png";
 
 type Tab = "Todos" | "Venta" | "Alquiler" | "Casa" | "Depto" | "PH";
 
@@ -23,8 +25,29 @@ export default function HomePage() {
   const [tipo, setTipo] = useState("");
   const [zona, setZona] = useState("");
   const [maxPrice, setMaxPrice] = useState(300000);
+  const [rawBarrios, setRawBarrios] = useState<Array<{ id: string; nombre: string; city_id: string }>>([]);
+  const [cityMap, setCityMap] = useState<Record<string, string>>({});
 
-  const barriosDisponibles = useMemo(() => getBarrios(ciudad), [ciudad]);
+  useEffect(() => {
+    Promise.all([
+      api.get<any[]>("/api/lookup/cities").catch(() => []),
+      api.get<any[]>("/api/lookup/barrios").catch(() => []),
+    ]).then(([cities, barrios]) => {
+      const cArr = Array.isArray(cities) ? cities : [];
+      const bArr = Array.isArray(barrios) ? barrios : [];
+      const map: Record<string, string> = {};
+      for (const c of cArr) map[c.nombre] = c.id;
+      setCityMap(map);
+      setRawBarrios(bArr);
+    });
+  }, []);
+
+  const barriosDisponibles = useMemo(() => {
+    if (rawBarrios.length === 0 || Object.keys(cityMap).length === 0) return getBarrios(ciudad);
+    const cityId = cityMap[ciudad];
+    if (!cityId) return [];
+    return rawBarrios.filter((b) => b.city_id === cityId).map((b) => b.nombre);
+  }, [ciudad, rawBarrios, cityMap]);
 
   const filtered = useMemo(() => {
     return all.filter((p) => {
@@ -56,6 +79,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
+      {/* ── HERO ── */}
       <section className="relative overflow-hidden bg-[oklch(0.13_0.005_285)] text-white">
         <div className="absolute inset-0">
           <Image
@@ -65,99 +89,144 @@ export default function HomePage() {
             className="object-cover"
             priority
           />
-          {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-black/80 z-20 pointer-events-none" />
-          {/* Noise texture */}
           <div className="absolute inset-0 noise-overlay opacity-[0.08] z-30 pointer-events-none" />
         </div>
 
-          <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32 z-40">
-          <div className="max-w-3xl">
-            <div className="animate-slide-up inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-[oklch(0.85_0_0)]">
-              Inmobiliaria · La Plata & Mar del Plata
+        <div className="relative mx-auto max-w-7xl px-6 z-40">
+          {/* Mobile: logo + WhatsApp */}
+          <div className="flex flex-col items-center justify-center py-16 md:hidden">
+            <Image
+              src={logo}
+              alt="Comesaña Propiedades"
+              className="h-12 w-auto"
+              priority
+            />
+            <span className="mt-1 text-xs font-medium tracking-wide text-white/60">Paola Comesaña · Col. 7470</span>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <a
+                href={`https://wa.me/${WHATSAPP}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[oklch(0.55_0.15_150)] px-3 py-1.5 text-[11px] font-medium text-white transition hover:brightness-110"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                +54 9 2215 05-8811
+              </a>
+              <a
+                href={`https://wa.me/${WHATSAPP_VISITA}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm transition hover:bg-white/10"
+              >
+                <Navigation className="h-3.5 w-3.5" />
+                +54 9 2215 43-7743
+              </a>
             </div>
-            <h1 className="animate-slide-up delay-1 mt-4 font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl">
-              Tu hogar,
-              <br />
-              <span className="italic text-[oklch(0.78_0.13_80)]">
-                nuestra misión.
-              </span>
-            </h1>
-            <p className="animate-slide-up delay-2 mt-6 max-w-xl text-lg text-[oklch(0.8_0_0)]">
-              Propiedades en La Plata y Mar del Plata. Encontrá la tuya con asesoramiento profesional.
-            </p>
           </div>
 
-          <div className="animate-slide-up delay-3 mt-10 grid gap-3 rounded-2xl border border-white/15 bg-white/5 p-4 backdrop-blur-xl md:grid-cols-6">
-            <select
-              value={ciudad}
-              onChange={(e) => {
-                setCiudad(e.target.value as "" | Ciudad);
-                setZona("");
-              }}
-              className="rounded-lg border border-white/20 bg-white/10 px-3 py-3 text-sm text-white backdrop-blur-md"
-            >
-              <option value="" className="text-foreground">Ciudad</option>
-              {CIUDADES.map((c) => (
-                <option key={c} className="text-foreground">{c}</option>
-              ))}
-            </select>
-            <select
-              value={op}
-              onChange={(e) =>
-                setOp(e.target.value as "Venta" | "Alquiler" | "")
-              }
-              className="rounded-lg border border-white/20 bg-white/10 px-3 py-3 text-sm text-white backdrop-blur-md"
-            >
-              <option value="" className="text-foreground">Operación</option>
-              <option className="text-foreground">Venta</option>
-              <option className="text-foreground">Alquiler</option>
-            </select>
-            <select
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-              className="rounded-lg border border-white/20 bg-white/10 px-3 py-3 text-sm text-white backdrop-blur-md"
-            >
-              <option value="" className="text-foreground">Tipo</option>
-              <option className="text-foreground">Casa</option>
-              <option className="text-foreground">Depto</option>
-              <option className="text-foreground">PH</option>
-              <option className="text-foreground">Local</option>
-            </select>
-            <select
-              value={zona}
-              onChange={(e) => setZona(e.target.value)}
-              className="rounded-lg border border-white/20 bg-white/10 px-3 py-3 text-sm text-white backdrop-blur-md"
-            >
-              <option value="" className="text-foreground">Zona</option>
-              {barriosDisponibles.map((b) => (
-                <option key={b} className="text-foreground">{b}</option>
-              ))}
-            </select>
-            <div className="flex flex-col justify-center rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-md">
-              <label className="text-[10px] uppercase tracking-wider text-white/60">
-                Precio máx · USD {maxPrice.toLocaleString()}
-              </label>
-              <input
-                type="range"
-                min={50000}
-                max={400000}
-                step={5000}
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(+e.target.value)}
-                className="accent-[oklch(0.78_0.13_80)]"
-              />
+          {/* Desktop: text content */}
+          <div className="hidden py-24 md:block md:py-32">
+            <div className="max-w-3xl">
+              <p className="animate-slide-up text-lg text-[oklch(0.8_0_0)] md:text-xl">
+                Propiedades en La Plata y Mar del Plata. Encontrá la tuya con asesoramiento profesional.
+              </p>
+              <div className="animate-slide-up delay-1 mt-6 flex flex-wrap gap-3">
+                <a
+                  href={`https://wa.me/${WHATSAPP}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.55_0.15_150)] px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  +54 9 2215 05-8811
+                </a>
+                <a
+                  href={`https://wa.me/${WHATSAPP_VISITA}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/10"
+                >
+                  <Navigation className="h-4 w-4" />
+                  +54 9 2215 43-7743
+                </a>
+              </div>
             </div>
-            <Link
-              href="/busqueda"
-              className="flex items-center justify-center gap-2 rounded-lg bg-[oklch(0.78_0.13_80)] px-4 py-3 text-sm font-semibold text-[oklch(0.15_0_0)] transition hover:brightness-105"
-            >
-              <Search className="h-4 w-4" />
-              Buscar
-            </Link>
           </div>
         </div>
       </section>
+
+      {/* ── FILTERS BAR (below hero on mobile, inside hero on desktop) ── */}
+      <div className="relative z-50 mx-auto max-w-7xl px-6 -mt-6 md:-mt-10">
+        <div className="animate-slide-up grid gap-3 rounded-2xl border p-4 md:grid-cols-6 max-md:border-border max-md:bg-card md:border-white/15 md:bg-white/5 md:backdrop-blur-xl">
+          <select
+            value={ciudad}
+            onChange={(e) => {
+              setCiudad(e.target.value as "" | Ciudad);
+              setZona("");
+            }}
+            className="rounded-lg border px-3 py-3 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white"
+          >
+            <option value="">Ciudad</option>
+            {CIUDADES.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+          <select
+            value={op}
+            onChange={(e) =>
+              setOp(e.target.value as "Venta" | "Alquiler" | "")
+            }
+            className="rounded-lg border px-3 py-3 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white"
+          >
+            <option value="">Operación</option>
+            <option>Venta</option>
+            <option>Alquiler</option>
+          </select>
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="rounded-lg border px-3 py-3 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white"
+          >
+            <option value="">Tipo</option>
+            <option>Casa</option>
+            <option>Depto</option>
+            <option>PH</option>
+            <option>Local</option>
+          </select>
+          <select
+            value={zona}
+            onChange={(e) => setZona(e.target.value)}
+            className="rounded-lg border px-3 py-3 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white"
+          >
+            <option value="">Zona</option>
+            {barriosDisponibles.map((b) => (
+              <option key={b}>{b}</option>
+            ))}
+          </select>
+          <div className="flex flex-col justify-center rounded-lg border px-3 py-2 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white">
+            <label className="text-[10px] uppercase tracking-wider max-md:text-muted-foreground md:text-white/60">
+              Precio máx · USD {maxPrice.toLocaleString()}
+            </label>
+            <input
+              type="range"
+              min={50000}
+              max={400000}
+              step={5000}
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(+e.target.value)}
+              className="accent-[oklch(0.78_0.13_80)]"
+            />
+          </div>
+          <Link
+            href="/busqueda"
+            className="flex items-center justify-center gap-2 rounded-lg bg-[oklch(0.78_0.13_80)] px-4 py-3 text-sm font-semibold text-[oklch(0.15_0_0)] transition hover:brightness-105"
+          >
+            <Search className="h-4 w-4" />
+            Buscar
+          </Link>
+        </div>
+      </div>
 
       <main className="mx-auto max-w-7xl px-6 py-12">
         {/* Destacados section */}

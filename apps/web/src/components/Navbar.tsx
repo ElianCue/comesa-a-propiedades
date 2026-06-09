@@ -37,6 +37,10 @@ export function Navbar() {
               className="h-8 w-auto transition duration-200 group-hover:scale-105"
               priority
             />
+            <span className="hidden flex-col leading-tight md:flex">
+              <span className="text-[11px] font-semibold text-foreground/80">Paola Comesaña</span>
+              <span className="text-[10px] font-medium tracking-wide" style={{ color: "oklch(0.78 0.13 80)" }}>Col. 7470</span>
+            </span>
           </Link>
 
           <div className="hidden items-center gap-0.5 md:flex">

@@ -8,6 +8,7 @@ import { api } from "@/lib/api-client";
 import {
   formatPriceFromProperty,
   WHATSAPP,
+  WHATSAPP_VISITA,
   propertyTitle,
   propertyDescription,
   SITE_URL,
@@ -243,9 +244,10 @@ export default function PropertyPage({ params }: Props) {
     },
   };
 
-  const thumbRows = Math.min(photoCount, 4);
-  const mainThumbs = photos.slice(1, thumbRows);
-  const remaining = photoCount - thumbRows;
+  const maxDesktopThumbs = photoCount <= 2 ? photoCount - 1 : photoCount === 4 ? 2 : 3;
+  const desktopThumbs = photos.slice(1, maxDesktopThumbs + 1);
+  const overlayIdx = maxDesktopThumbs + 1;
+  const remainingOffset = photoCount - 1 - maxDesktopThumbs;
 
   return (
     <div className="min-h-screen bg-background">
@@ -266,53 +268,117 @@ export default function PropertyPage({ params }: Props) {
 
         {/* ── HERO GALLERY ── */}
         {photoCount > 0 ? (
-          <div className="grid animate-slide-up grid-cols-1 gap-2 md:grid-cols-4 md:grid-rows-2">
-            <div
-              className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted md:col-span-2 md:row-span-2 md:aspect-auto"
-              onClick={() => setLightboxIdx(0)}
-            >
-              <img
-                src={photos[0]}
-                alt={`${p.tipo} en ${p.barrio}, ${p.ciudad}`}
-                className="h-full w-full object-cover transition duration-500 hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-              <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm">
-                <ImageIcon className="h-3.5 w-3.5" />
-                {photoCount} fotos
-              </div>
-            </div>
-            {mainThumbs.map((f, i) => (
+          <>
+            {/* Mobile: 2-column grid */}
+            <div className="grid animate-slide-up grid-cols-2 gap-2 md:hidden">
               <div
-                key={f}
-                className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted max-md:hidden"
-                onClick={() => setLightboxIdx(i + 1)}
+                className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted col-span-2"
+                onClick={() => setLightboxIdx(0)}
               >
                 <img
-                  src={f}
-                  alt={`${p.tipo} en ${p.barrio} — foto ${i + 2}`}
+                  src={photos[0]}
+                  alt={`${p.tipo} en ${p.barrio}, ${p.ciudad}`}
                   className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                  loading="eager"
                 />
-              </div>
-            ))}
-            {remaining > 0 && (
-              <div
-                className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted max-md:hidden"
-                onClick={() => setLightboxIdx(4)}
-              >
-                <img
-                  src={photos[4]}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  loading="eager"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-lg font-bold text-white backdrop-blur-sm">
-                  +{remaining}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur-sm">
+                  <ImageIcon className="h-3 w-3" />
+                  {photoCount} fotos
                 </div>
               </div>
-            )}
-          </div>
+              {photoCount > 1 && (
+                <div
+                  className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted"
+                  onClick={() => setLightboxIdx(1)}
+                >
+                  <img
+                    src={photos[1]}
+                    alt=""
+                    className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                    loading="eager"
+                  />
+                </div>
+              )}
+              {photoCount > 2 && (
+                <div
+                  className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted"
+                  onClick={() => setLightboxIdx(2)}
+                >
+                  <img
+                    src={photos[2]}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                  />
+                  {photoCount > 3 && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50 text-base font-bold text-white backdrop-blur-sm">
+                      +{photoCount - 2}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Desktop: adaptive mosaic */}
+            <div
+              className={`hidden animate-slide-up gap-2 md:grid ${
+                photoCount >= 5 ? "grid-cols-4 grid-rows-2" :
+                photoCount === 4 ? "grid-cols-4 grid-rows-2" :
+                photoCount === 3 ? "grid-cols-3 grid-rows-2" :
+                photoCount === 2 ? "grid-cols-2 grid-rows-1" :
+                "grid-cols-1"
+              }`}
+            >
+              <div
+                className={`relative cursor-pointer overflow-hidden rounded-2xl bg-muted ${
+                  photoCount >= 3 ? "col-span-2 row-span-2" : "col-span-1"
+                }`}
+                onClick={() => setLightboxIdx(0)}
+                style={{ minHeight: photoCount >= 3 ? "auto" : "400px" }}
+              >
+                <img
+                  src={photos[0]}
+                  alt={`${p.tipo} en ${p.barrio}, ${p.ciudad}`}
+                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                  <ImageIcon className="h-3.5 w-3.5" />
+                  {photoCount} fotos
+                </div>
+              </div>
+              {desktopThumbs.map((f, i) => (
+                <div
+                  key={f}
+                  className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted"
+                  onClick={() => setLightboxIdx(i + 1)}
+                >
+                  <img
+                    src={f}
+                    alt={`${p.tipo} en ${p.barrio} — foto ${i + 2}`}
+                    className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                    loading="eager"
+                  />
+                </div>
+              ))}
+              {remainingOffset > 0 && overlayIdx < photoCount && (
+                <div
+                  className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted"
+                  onClick={() => setLightboxIdx(overlayIdx)}
+                >
+                  <img
+                    src={photos[overlayIdx]}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-lg font-bold text-white backdrop-blur-sm">
+                    +{remainingOffset}
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
         ) : (
           <div className="flex aspect-[21/9] items-center justify-center rounded-2xl bg-muted">
             <div className="text-center">
@@ -581,12 +647,15 @@ export default function PropertyPage({ params }: Props) {
             <div className="animate-slide-up rounded-2xl border border-border bg-card p-6 delay-2">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[oklch(0.32_0.08_255)] font-display text-lg font-bold text-white">
-                  CP
+                  PC
                 </div>
                 <div>
-                  <div className="font-semibold">Comesaña Propiedades</div>
-                  <div className="text-xs text-muted-foreground">
-                    +54 9 221 555 1234
+                  <div className="font-semibold">Paola Comesaña</div>
+                  <div className="text-xs font-medium tracking-wide" style={{ color: "oklch(0.78 0.13 80)" }}>
+                    Col. 7470
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    +54 9 2215 05-8811
                   </div>
                 </div>
               </div>
@@ -636,7 +705,7 @@ export default function PropertyPage({ params }: Props) {
               </p>
               <div className="mt-4 space-y-2">
                 <a
-                  href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola! Quiero visitar la propiedad en ${p.direccion}, ${p.barrio} (${p.ciudad}). Precio: ${formatPriceFromProperty(p)}`)}`}
+                  href={`https://wa.me/${WHATSAPP_VISITA}?text=${encodeURIComponent(`Hola! Quiero visitar la propiedad en ${p.direccion}, ${p.barrio} (${p.ciudad}). Precio: ${formatPriceFromProperty(p)}`)}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-[oklch(0.55_0.15_150)] py-3 text-sm font-semibold text-white transition hover:brightness-110"

@@ -114,7 +114,8 @@ export function propertyDescription(p: Property): string {
   return `${p.descripcion.substring(0, 120)} — ${p.ambientes} ambientes, ${p.dormitorios} dorm., ${p.m2Totales} m². ${formatPriceFromProperty(p)}.`;
 }
 
-export const WHATSAPP = "5492215551234";
+export const WHATSAPP = "5492215058811";
+export const WHATSAPP_VISITA = "5492215437743";
 
 export const SITE_URL = "https://comesana-propiedades.vercel.app";
 
