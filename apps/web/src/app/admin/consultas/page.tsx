@@ -85,7 +85,7 @@ export default function AdminConsultas() {
           >
             Consultas
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "oklch(0.5 0.01 285)" }}>
+          <p className="mt-1 text-sm" style={{ color: "var(--admin-text-muted)" }}>
             {inquiries.length} consultas
             {noLeidas > 0 && (
               <span className="ml-2 font-semibold" style={{ color: "var(--gold)" }}>
@@ -100,8 +100,8 @@ export default function AdminConsultas() {
         <div
           className="mt-8 flex flex-col items-center justify-center rounded-xl border py-20 text-sm"
           style={{
-            borderColor: "oklch(0.18 0.005 285)",
-            color: "oklch(0.45 0.01 285)",
+            borderColor: "var(--admin-border)",
+            color: "var(--admin-text-dim)",
           }}
         >
           <MessageSquare className="mb-3 h-8 w-8" />
@@ -115,9 +115,9 @@ export default function AdminConsultas() {
               className="animate-slide-up rounded-xl border transition-all"
               style={{
                 animationDelay: `${i * 0.04}s`,
-                background: "oklch(0.12 0.005 285)",
+                background: "var(--admin-surface-active)",
                 borderColor: inq.leido
-                  ? "oklch(0.18 0.005 285)"
+                  ? "var(--admin-border)"
                   : "var(--gold)",
                 borderLeftWidth: inq.leido ? "1px" : "3px",
                 paddingLeft: inq.leido ? "23px" : "21px",
@@ -127,8 +127,8 @@ export default function AdminConsultas() {
                 <div
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
                   style={{
-                    background: inq.leido ? "oklch(0.18 0.005 285)" : "var(--gold-dim)",
-                    color: inq.leido ? "oklch(0.5 0.01 285)" : "var(--gold)",
+                    background: inq.leido ? "var(--admin-border)" : "var(--gold-dim)",
+                    color: inq.leido ? "var(--admin-text-muted)" : "var(--gold)",
                   }}
                 >
                   {inq.nombre.charAt(0).toUpperCase()}
@@ -145,7 +145,7 @@ export default function AdminConsultas() {
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-3 text-xs" style={{ color: "oklch(0.5 0.01 285)" }}>
+                  <div className="mt-1 flex flex-wrap items-center gap-3 text-xs" style={{ color: "var(--admin-text-muted)" }}>
                     <span className="inline-flex items-center gap-1">
                       <Mail className="h-3 w-3" /> {inq.email}
                     </span>
@@ -156,11 +156,11 @@ export default function AdminConsultas() {
                     )}
                   </div>
                   {inq.mensaje && (
-                    <p className="mt-3 text-sm leading-relaxed" style={{ color: "oklch(0.8 0.01 285)" }}>
+                    <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--admin-text-muted)" }}>
                       {inq.mensaje}
                     </p>
                   )}
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs" style={{ color: "oklch(0.4 0.01 285)" }}>
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs" style={{ color: "var(--admin-text-dim)" }}>
                     <span>Ref: {inq.property.direccion}, {inq.property.barrio.nombre}, {inq.property.city.nombre}</span>
                     <span>·</span>
                     <span>
@@ -178,14 +178,14 @@ export default function AdminConsultas() {
                   <button
                     onClick={() => toggleRead(inq.id)}
                     className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                    style={{ color: "oklch(0.5 0.01 285)" }}
+                    style={{ color: "var(--admin-text-muted)" }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "oklch(0.18 0.005 285)";
+                      e.currentTarget.style.background = "var(--admin-border)";
                       e.currentTarget.style.color = "var(--gold)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                      e.currentTarget.style.color = "var(--admin-text-muted)";
                     }}
                     title={inq.leido ? "Marcar como no leído" : "Marcar como leído"}
                   >
@@ -194,14 +194,14 @@ export default function AdminConsultas() {
                   <button
                     onClick={() => { setDeleteId(inq.id); setDeleteConfirmOpen(true); }}
                     className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                    style={{ color: "oklch(0.5 0.01 285)" }}
+                    style={{ color: "var(--admin-text-muted)" }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "oklch(0.18 0.005 285)";
-                      e.currentTarget.style.color = "oklch(0.6 0.22 27)";
+                      e.currentTarget.style.background = "var(--admin-border)";
+                      e.currentTarget.style.color = "var(--admin-destructive)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                      e.currentTarget.style.color = "var(--admin-text-muted)";
                     }}
                     title="Eliminar"
                   >

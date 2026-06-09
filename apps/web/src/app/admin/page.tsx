@@ -149,7 +149,7 @@ export default function AdminProperties() {
           >
             Propiedades
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "oklch(0.5 0.01 285)" }}>
+          <p className="mt-1 text-sm" style={{ color: "var(--admin-text-muted)" }}>
             {filtered.length} de {properties.length} propiedades
           </p>
         </div>
@@ -158,9 +158,9 @@ export default function AdminProperties() {
             onClick={() => setShowFilters(!showFilters)}
             className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all"
             style={{
-              borderColor: showFilters ? "var(--gold)" : "oklch(0.22 0.005 285)",
-              color: showFilters ? "var(--gold)" : "oklch(0.6 0.01 285)",
-              background: showFilters ? "oklch(0.78 0.13 80 / 0.08)" : "transparent",
+              borderColor: showFilters ? "var(--gold)" : "var(--admin-input-border)",
+              color: showFilters ? "var(--gold)" : "var(--admin-text-muted)",
+              background: showFilters ? "var(--gold-dim)" : "transparent",
             }}
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -188,16 +188,16 @@ export default function AdminProperties() {
       {showFilters && (
         <div
           className="mt-6 rounded-xl border p-5 animate-fade-in"
-          style={{ borderColor: "oklch(0.18 0.005 285)", background: "oklch(0.1 0.005 285)" }}
+          style={{ borderColor: "var(--admin-border)", background: "var(--admin-surface)" }}
         >
           <div className="flex flex-wrap items-end gap-3">
             <div>
-              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Ciudad</div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--admin-text-muted)" }}>Ciudad</div>
               <select
                 value={fCiudad}
                 onChange={(e) => setFCiudad(e.target.value)}
                 className="rounded-lg border px-3 py-2 text-xs"
-                style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)", minWidth: "140px" }}
+                style={{ background: "var(--admin-surface-hover)", borderColor: "var(--admin-input-border)", color: "var(--admin-text)", minWidth: "140px" }}
               >
                 <option value="">Todas</option>
                 {ciudades.map((c) => (
@@ -206,12 +206,12 @@ export default function AdminProperties() {
               </select>
             </div>
             <div>
-              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Operación</div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--admin-text-muted)" }}>Operación</div>
               <select
                 value={fOperacion}
                 onChange={(e) => setFOperacion(e.target.value)}
                 className="rounded-lg border px-3 py-2 text-xs"
-                style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)", minWidth: "120px" }}
+                style={{ background: "var(--admin-surface-hover)", borderColor: "var(--admin-input-border)", color: "var(--admin-text)", minWidth: "120px" }}
               >
                 <option value="">Todas</option>
                 <option value="Venta">Venta</option>
@@ -219,12 +219,12 @@ export default function AdminProperties() {
               </select>
             </div>
             <div>
-              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Tipo</div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--admin-text-muted)" }}>Tipo</div>
               <select
                 value={fTipo}
                 onChange={(e) => setFTipo(e.target.value)}
                 className="rounded-lg border px-3 py-2 text-xs"
-                style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)", minWidth: "120px" }}
+                style={{ background: "var(--admin-surface-hover)", borderColor: "var(--admin-input-border)", color: "var(--admin-text)", minWidth: "120px" }}
               >
                 <option value="">Todos</option>
                 {tipos.map((t) => (
@@ -233,12 +233,12 @@ export default function AdminProperties() {
               </select>
             </div>
             <div>
-              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Estado</div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--admin-text-muted)" }}>Estado</div>
               <select
                 value={fEstado}
                 onChange={(e) => setFEstado(e.target.value as "" | "activo" | "inactivo")}
                 className="rounded-lg border px-3 py-2 text-xs"
-                style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)", minWidth: "120px" }}
+                style={{ background: "var(--admin-surface-hover)", borderColor: "var(--admin-input-border)", color: "var(--admin-text)", minWidth: "120px" }}
               >
                 <option value="">Todos</option>
                 <option value="activo">Activo</option>
@@ -246,15 +246,15 @@ export default function AdminProperties() {
               </select>
             </div>
             <div className="flex-1 min-w-[200px]">
-              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "oklch(0.5 0.01 285)" }}>Buscar</div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--admin-text-muted)" }}>Buscar</div>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" style={{ color: "oklch(0.5 0.01 285)" }} />
+                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" style={{ color: "var(--admin-text-muted)" }} />
                 <input
                   value={fSearch}
                   onChange={(e) => setFSearch(e.target.value)}
                   placeholder="Dirección o barrio..."
                   className="w-full rounded-lg border py-2 pl-9 pr-3 text-xs"
-                  style={{ background: "oklch(0.14 0.005 285)", borderColor: "oklch(0.22 0.005 285)", color: "oklch(0.9 0 0)" }}
+                  style={{ background: "var(--admin-surface-hover)", borderColor: "var(--admin-input-border)", color: "var(--admin-text)" }}
                 />
               </div>
             </div>
@@ -262,9 +262,9 @@ export default function AdminProperties() {
               <button
                 onClick={clearFilters}
                 className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors"
-                style={{ color: "oklch(0.5 0.01 285)" }}
-                onMouseEnter={(e) => e.currentTarget.style.color = "oklch(0.9 0 0)"}
-                onMouseLeave={(e) => e.currentTarget.style.color = "oklch(0.5 0.01 285)"}
+                style={{ color: "var(--admin-text-muted)" }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "var(--admin-text)"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "var(--admin-text-muted)"}
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Limpiar
@@ -277,16 +277,16 @@ export default function AdminProperties() {
       {/* Table */}
       <div
         className="mt-6 overflow-x-auto rounded-xl border"
-        style={{ borderColor: "oklch(0.18 0.005 285)" }}
+        style={{ borderColor: "var(--admin-border)" }}
       >
         <table className="w-full text-sm" style={{ minWidth: "640px" }}>
           <thead>
-            <tr style={{ background: "oklch(0.06 0.005 285)" }}>
+            <tr style={{ background: "var(--admin-bg)" }}>
               {["Foto", "Dirección", "Ciudad", "Tipo", "Operación", "Precio", "Estado", ""].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.15em]"
-                  style={{ color: "oklch(0.45 0.01 285)" }}
+                  style={{ color: "var(--admin-text-dim)" }}
                 >
                   {h}
                 </th>
@@ -300,15 +300,15 @@ export default function AdminProperties() {
                 className="animate-fade-in border-t transition-all"
                 style={{
                   animationDelay: `${0.3 + i * 0.03}s`,
-                  borderColor: "oklch(0.18 0.005 285)",
+                  borderColor: "var(--admin-border)",
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.background = "oklch(0.14 0.005 285)"}
+                onMouseEnter={(e) => e.currentTarget.style.background = "var(--admin-surface-hover)"}
                 onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
               >
                 <td className="px-4 py-3">
                   <div
                     className="h-10 w-14 overflow-hidden rounded-lg"
-                    style={{ background: "oklch(0.14 0.005 285)" }}
+                    style={{ background: "var(--admin-surface-hover)" }}
                   >
                     {p.fotos[0] && (
                       <img
@@ -323,9 +323,9 @@ export default function AdminProperties() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="font-medium">{p.direccion}</div>
-                  <div className="text-xs" style={{ color: "oklch(0.5 0.01 285)" }}>{p.barrio}</div>
+                  <div className="text-xs" style={{ color: "var(--admin-text-muted)" }}>{p.barrio}</div>
                 </td>
-                <td className="px-4 py-3 text-xs" style={{ color: "oklch(0.6 0.01 285)" }}>{p.ciudad}</td>
+                <td className="px-4 py-3 text-xs" style={{ color: "var(--admin-text-muted)" }}>{p.ciudad}</td>
                 <td className="px-4 py-3">{p.tipo}</td>
                 <td className="px-4 py-3">{p.operacion}</td>
                 <td className="px-4 py-3 font-semibold" style={{ color: "var(--gold)" }}>
@@ -336,8 +336,8 @@ export default function AdminProperties() {
                   <span
                     className="inline-block rounded-full px-2.5 py-0.5 text-[10px] font-semibold"
                     style={{
-                      background: p.activo ? "oklch(0.15 0.1 150 / 0.2)" : "oklch(0.2 0.01 285)",
-                      color: p.activo ? "oklch(0.6 0.15 150)" : "oklch(0.45 0.01 285)",
+                      background: p.activo ? "var(--admin-active-bg)" : "var(--admin-surface-active)",
+                      color: p.activo ? "var(--admin-active-text)" : "var(--admin-text-dim)",
                     }}
                   >
                     {p.activo ? "Activo" : "Inactivo"}
@@ -351,14 +351,14 @@ export default function AdminProperties() {
                       rel="noopener noreferrer"
                       title="Ver en la web"
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                      style={{ color: "oklch(0.5 0.01 285)" }}
+                      style={{ color: "var(--admin-text-muted)" }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "oklch(0.18 0.005 285)";
-                        e.currentTarget.style.color = "oklch(0.78 0.13 80)";
+                        e.currentTarget.style.background = "var(--admin-border)";
+                        e.currentTarget.style.color = "var(--gold)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                        e.currentTarget.style.color = "var(--admin-text-muted)";
                       }}
                     >
                       <ExternalLink className="h-4 w-4" />
@@ -367,14 +367,14 @@ export default function AdminProperties() {
                       onClick={() => generateQRPDF(p as any)}
                       title="Descargar QR"
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                      style={{ color: "oklch(0.5 0.01 285)" }}
+                      style={{ color: "var(--admin-text-muted)" }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "oklch(0.18 0.005 285)";
-                        e.currentTarget.style.color = "oklch(0.78 0.13 80)";
+                        e.currentTarget.style.background = "var(--admin-border)";
+                        e.currentTarget.style.color = "var(--gold)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                        e.currentTarget.style.color = "var(--admin-text-muted)";
                       }}
                     >
                       <QrCode className="h-4 w-4" />
@@ -383,14 +383,14 @@ export default function AdminProperties() {
                       onClick={() => generateCartelPDF(p as any)}
                       title="Descargar cartel"
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                      style={{ color: "oklch(0.5 0.01 285)" }}
+                      style={{ color: "var(--admin-text-muted)" }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "oklch(0.18 0.005 285)";
-                        e.currentTarget.style.color = "oklch(0.78 0.13 80)";
+                        e.currentTarget.style.background = "var(--admin-border)";
+                        e.currentTarget.style.color = "var(--gold)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                        e.currentTarget.style.color = "var(--admin-text-muted)";
                       }}
                     >
                       <FileText className="h-4 w-4" />
@@ -398,14 +398,14 @@ export default function AdminProperties() {
                     <button
                       onClick={() => setDrawer(p)}
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                      style={{ color: "oklch(0.5 0.01 285)" }}
+                      style={{ color: "var(--admin-text-muted)" }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "oklch(0.18 0.005 285)";
+                        e.currentTarget.style.background = "var(--admin-border)";
                         e.currentTarget.style.color = "var(--gold)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                        e.currentTarget.style.color = "var(--admin-text-muted)";
                       }}
                     >
                       <Pencil className="h-4 w-4" />
@@ -414,14 +414,14 @@ export default function AdminProperties() {
                       onClick={() => handleDelete(p.id)}
                       disabled={deletingLoading}
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                      style={{ color: "oklch(0.5 0.01 285)" }}
+                      style={{ color: "var(--admin-text-muted)" }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "oklch(0.18 0.005 285)";
-                        e.currentTarget.style.color = "oklch(0.6 0.22 27)";
+                        e.currentTarget.style.background = "var(--admin-border)";
+                        e.currentTarget.style.color = "var(--admin-destructive)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = "oklch(0.5 0.01 285)";
+                        e.currentTarget.style.color = "var(--admin-text-muted)";
                       }}
                     >
                       {deletingLoading ? (
@@ -438,7 +438,7 @@ export default function AdminProperties() {
         </table>
 
         {!filtered.length && (
-          <div className="flex items-center justify-center py-20 text-sm" style={{ color: "oklch(0.45 0.01 285)" }}>
+          <div className="flex items-center justify-center py-20 text-sm" style={{ color: "var(--admin-text-dim)" }}>
             {properties.length === 0 ? "No hay propiedades cargadas" : "Sin resultados para los filtros seleccionados"}
           </div>
         )}

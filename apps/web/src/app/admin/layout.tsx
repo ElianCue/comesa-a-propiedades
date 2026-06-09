@@ -11,6 +11,8 @@ import {
   Menu,
   X,
   Loader2,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 interface AdminUser {
@@ -19,12 +21,35 @@ interface AdminUser {
   nombre: string;
 }
 
+function useTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("comesana.admin.theme") as "light" | "dark" | null;
+    if (stored) setTheme(stored);
+    else setTheme("light");
+    setMounted(true);
+  }, []);
+
+  const toggle = () => {
+    setTheme((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      localStorage.setItem("comesana.admin.theme", next);
+      return next;
+    });
+  };
+
+  return { theme, toggle, mounted };
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [admin, setAdmin] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, toggle, mounted } = useTheme();
 
   const isLoginPage = pathname === "/admin/login";
 
@@ -55,8 +80,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="admin-theme flex min-h-screen items-center justify-center" style={{ background: "oklch(0.08 0.005 285)" }}>
-        <Loader2 className="h-6 w-6 animate-spin" style={{ color: "oklch(0.78 0.13 80)" }} />
+      <div className="admin-theme dark flex min-h-screen items-center justify-center" style={{ background: "var(--admin-bg)" }}>
+        <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--gold)" }} />
       </div>
     );
   }
@@ -65,19 +90,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { href: "/admin", label: "Propiedades", icon: Building2 },
+    { href: "/admin/consultas", label: "Consultas", icon: MessageSquare },
   ];
 
   return (
-    <div className="admin-theme" style={{ background: "oklch(0.08 0.005 285)", minHeight: "100vh", color: "oklch(0.98 0 0)", fontFamily: "var(--font-sans)" }}>
+    <div className={`admin-theme ${mounted ? theme : "dark"}`} style={{ background: "var(--admin-bg)", minHeight: "100vh", color: "var(--admin-text)", fontFamily: "var(--font-sans)" }}>
       <style>{`
-        .admin-theme {
-          --gold: oklch(0.78 0.13 80);
-          --gold-dim: oklch(0.78 0.13 80 / 0.15);
-        }
         .admin-theme input, .admin-theme select, .admin-theme textarea {
-          background: oklch(0.14 0.005 285);
-          border-color: oklch(0.22 0.005 285);
-          color: oklch(0.98 0 0);
+          background: var(--admin-input-bg);
+          border-color: var(--admin-input-border);
+          color: var(--admin-text);
           border-radius: 8px;
           padding: 10px 14px;
           font-size: 14px;
@@ -86,14 +108,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           transition: border-color 0.2s;
         }
         .admin-theme input:focus, .admin-theme select:focus, .admin-theme textarea:focus {
-          border-color: var(--gold);
+          border-color: var(--admin-input-focus);
         }
         .admin-theme input::placeholder, .admin-theme textarea::placeholder {
-          color: oklch(0.4 0.01 285);
+          color: var(--admin-text-muted);
         }
         .admin-scrollbar::-webkit-scrollbar { width: 4px; }
         .admin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .admin-scrollbar::-webkit-scrollbar-thumb { background: oklch(0.25 0.01 285); border-radius: 2px; }
+        .admin-scrollbar::-webkit-scrollbar-thumb { background: var(--admin-surface-active); border-radius: 2px; }
+        .admin-theme select option {
+          background: var(--admin-surface);
+          color: var(--admin-text);
+        }
       `}</style>
 
       {/* Mobile overlay */}
@@ -109,12 +135,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside
         className="fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r transition-transform duration-300"
         style={{
-          background: "oklch(0.1 0.005 285)",
-          borderColor: "oklch(0.18 0.005 285)",
+          background: "var(--admin-surface)",
+          borderColor: "var(--admin-border)",
           transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
         }}
       >
-        <div className="flex h-16 items-center gap-3 border-b px-5" style={{ borderColor: "oklch(0.18 0.005 285)" }}>
+        <div className="flex h-16 items-center gap-3 border-b px-5" style={{ borderColor: "var(--admin-border)" }}>
           <div
             className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
             style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
@@ -136,9 +162,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all"
                 style={{
                   background: active ? "var(--gold-dim)" : "transparent",
-                  color: active ? "var(--gold)" : "oklch(0.6 0.01 285)",
+                  color: active ? "var(--gold)" : "var(--admin-text-muted)",
                 }}
-                onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "oklch(0.18 0.005 285)"; }}
+                onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "var(--admin-surface-hover)"; }}
                 onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
               >
                 <item.icon className="h-4 w-4" />
@@ -148,15 +174,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div className="border-t px-3 py-4" style={{ borderColor: "oklch(0.18 0.005 285)" }}>
-          <div className="mb-3 px-3 text-xs" style={{ color: "oklch(0.45 0.01 285)" }}>
+        <div className="border-t px-3 py-4" style={{ borderColor: "var(--admin-border)" }}>
+          <div className="mb-2 px-3 text-xs" style={{ color: "var(--admin-text-muted)" }}>
             {admin.email}
           </div>
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggle}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all"
+            style={{ color: "var(--admin-text-muted)" }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "var(--admin-surface-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === "dark" ? "Modo claro" : "Modo oscuro"}
+          </button>
+
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all"
-            style={{ color: "oklch(0.5 0.01 285)" }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "oklch(0.18 0.005 285)"}
+            style={{ color: "var(--admin-text-muted)" }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "var(--admin-surface-hover)"}
             onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
           >
             <LogOut className="h-4 w-4" />
@@ -170,13 +209,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Top bar */}
         <div
           className="flex h-16 items-center gap-3 border-b px-5"
-          style={{ borderColor: "oklch(0.18 0.005 285)" }}
+          style={{ borderColor: "var(--admin-border)" }}
         >
           <button
             onClick={() => setSidebarOpen(true)}
             className="flex items-center justify-center"
           >
-            <Menu className="h-5 w-5" style={{ color: "oklch(0.6 0.01 285)" }} />
+            <Menu className="h-5 w-5" style={{ color: "var(--admin-text-muted)" }} />
           </button>
           <div
             className="flex h-7 w-7 items-center justify-center rounded text-xs font-bold"

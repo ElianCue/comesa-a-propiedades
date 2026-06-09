@@ -66,7 +66,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <div>
       <div
         className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em]"
-        style={{ color: "oklch(0.5 0.01 285)" }}
+        style={{ color: "var(--admin-text-muted)" }}
       >
         {title}
       </div>
@@ -78,7 +78,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, children, full }: { label: string; children: React.ReactNode; full?: boolean }) {
   return (
     <div className={full ? "md:col-span-2" : ""}>
-      <div className="mb-1.5 text-[11px] font-medium" style={{ color: "oklch(0.6 0.01 285)" }}>
+      <div className="mb-1.5 text-[11px] font-medium" style={{ color: "var(--admin-text-muted)" }}>
         {label}
       </div>
       {children}
@@ -272,8 +272,8 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
         onSubmit={submit}
         className="relative z-10 flex w-full max-w-lg flex-col overflow-hidden"
         style={{
-          background: "oklch(0.1 0.005 285)",
-          borderLeft: "1px solid oklch(0.18 0.005 285)",
+          background: "var(--admin-surface)",
+          borderLeft: "1px solid var(--admin-border)",
           animation: "slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
@@ -282,7 +282,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
         {/* Header */}
         <div
           className="flex items-center justify-between border-b px-6 py-4"
-          style={{ borderColor: "oklch(0.18 0.005 285)" }}
+          style={{ borderColor: "var(--admin-border)" }}
         >
           <h2
             className="font-display text-lg font-semibold tracking-tight"
@@ -294,8 +294,8 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
             type="button"
             onClick={onClose}
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-            style={{ color: "oklch(0.5 0.01 285)" }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "oklch(0.18 0.005 285)"}
+            style={{ color: "var(--admin-text-muted)" }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "var(--admin-surface-active)"}
             onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
           >
             <X className="h-4 w-4" />
@@ -486,8 +486,8 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                 </Field>
               </div>
 
-              <div className="mt-6 border-t pt-6" style={{ borderColor: "oklch(0.18 0.005 285)" }}>
-                <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em]" style={{ color: "oklch(0.5 0.01 285)" }}>
+              <div className="mt-6 border-t pt-6" style={{ borderColor: "var(--admin-border)" }}>
+                <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em]" style={{ color: "var(--admin-text-muted)" }}>
                   Características adicionales
                 </div>
                 {p.detalles && Object.entries(p.detalles).map(([key, val]) => (
@@ -501,13 +501,13 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                         setP({ ...p, detalles: newDetalles });
                       }}
                       className="flex-1 rounded-lg px-3 py-2 text-sm"
-                      style={{ background: "oklch(0.14 0.005 285)", border: "1px solid oklch(0.22 0.005 285)" }}
+                      style={{ background: "var(--admin-surface-hover)", border: "1px solid var(--admin-input-border)" }}
                     />
                     <input
                       value={val}
                       onChange={(e) => setP({ ...p, detalles: { ...p.detalles, [key]: e.target.value } })}
                       className="flex-1 rounded-lg px-3 py-2 text-sm"
-                      style={{ background: "oklch(0.14 0.005 285)", border: "1px solid oklch(0.22 0.005 285)" }}
+                      style={{ background: "var(--admin-surface-hover)", border: "1px solid var(--admin-input-border)" }}
                     />
                     <button
                       type="button"
@@ -517,9 +517,9 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                         setP({ ...p, detalles: newDetalles });
                       }}
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                      style={{ color: "oklch(0.5 0.01 285)" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "oklch(0.18 0.005 285)"; e.currentTarget.style.color = "oklch(0.6 0.22 27)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "oklch(0.5 0.01 285)"; }}
+                      style={{ color: "var(--admin-text-muted)" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "var(--admin-surface-active)"; e.currentTarget.style.color = "var(--admin-destructive)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--admin-text-muted)"; }}
                     >
                       ×
                     </button>
@@ -531,14 +531,14 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                     onChange={(e) => setNewDetalleKey(e.target.value)}
                     placeholder="Clave"
                     className="flex-1 rounded-lg px-3 py-2 text-sm"
-                    style={{ background: "oklch(0.14 0.005 285)", border: "1px solid oklch(0.22 0.005 285)" }}
+                    style={{ background: "var(--admin-surface-hover)", border: "1px solid var(--admin-input-border)" }}
                   />
                   <input
                     value={newDetalleVal}
                     onChange={(e) => setNewDetalleVal(e.target.value)}
                     placeholder="Valor"
                     className="flex-1 rounded-lg px-3 py-2 text-sm"
-                    style={{ background: "oklch(0.14 0.005 285)", border: "1px solid oklch(0.22 0.005 285)" }}
+                    style={{ background: "var(--admin-surface-hover)", border: "1px solid var(--admin-input-border)" }}
                   />
                   <button
                     type="button"
@@ -579,14 +579,14 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                           onClick={() => toggleAmenity(amenity.nombre)}
                           className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all"
                           style={{
-                            background: active ? "var(--gold-dim)" : "oklch(0.14 0.005 285)",
-                            outline: active ? "1px solid var(--gold)" : "1px solid oklch(0.22 0.005 285)",
+                            background: active ? "var(--gold-dim)" : "var(--admin-surface-hover)",
+                            outline: active ? "1px solid var(--gold)" : "1px solid var(--admin-input-border)",
                           }}
                         >
                           <div
                             className="flex h-4 w-4 items-center justify-center rounded text-[10px] font-bold transition-all"
                             style={{
-                              background: active ? "var(--gold)" : "oklch(0.22 0.005 285)",
+                              background: active ? "var(--gold)" : "var(--admin-input-border)",
                               color: active ? "oklch(0.08 0.005 285)" : "transparent",
                             }}
                           >
@@ -598,7 +598,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                     })}
                   </div>
                   
-                  <div className="text-[10px] text-[oklch(0.5 0.01 285)]">
+                  <div className="text-[10px]" style={{ color: "var(--admin-text-muted)" }}>
                     {p.amenities.length} amenit{p.amenities.length !== 1 ? "ies" : "y"} seleccionada{p.amenities.length !== 1 ? "s" : ""}
                   </div>
                 </div>
@@ -611,7 +611,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
           </Section>
 
           <div className="space-y-3">
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "oklch(0.14 0.005 285)" }}>
+            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)" }}>
               <input
                 type="checkbox"
                 checked={p.activo}
@@ -621,7 +621,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
               <div
                 className="flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
                 style={{
-                  background: p.activo ? "var(--gold)" : "oklch(0.25 0.01 285)",
+                  background: p.activo ? "var(--gold)" : "var(--admin-surface-active)",
                   padding: "2px",
                 }}
               >
@@ -635,7 +635,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
               </div>
               Propiedad activa
             </label>
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "oklch(0.14 0.005 285)" }}>
+            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)" }}>
               <input
                 type="checkbox"
                 checked={p.aptoBanco}
@@ -645,7 +645,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
               <div
                 className="flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
                 style={{
-                  background: p.aptoBanco ? "var(--gold)" : "oklch(0.25 0.01 285)",
+                  background: p.aptoBanco ? "var(--gold)" : "var(--admin-surface-active)",
                   padding: "2px",
                 }}
               >
@@ -659,7 +659,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
               </div>
               Apto banco
             </label>
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "oklch(0.14 0.005 285)" }}>
+            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)" }}>
               <input
                 type="checkbox"
                 checked={p.permuta}
@@ -669,7 +669,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
               <div
                 className="flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
                 style={{
-                  background: p.permuta ? "var(--gold)" : "oklch(0.25 0.01 285)",
+                  background: p.permuta ? "var(--gold)" : "var(--admin-surface-active)",
                   padding: "2px",
                 }}
               >
@@ -696,15 +696,15 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
         {/* Footer */}
         <div
           className="flex items-center justify-end gap-3 border-t px-6 py-4"
-          style={{ borderColor: "oklch(0.18 0.005 285)" }}
+          style={{ borderColor: "var(--admin-border)" }}
         >
           <button
             type="button"
             onClick={onClose}
             className="rounded-lg px-5 py-2.5 text-sm font-medium transition-colors"
-            style={{ background: "oklch(0.14 0.005 285)", color: "oklch(0.6 0.01 285)" }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "oklch(0.18 0.005 285)"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "oklch(0.14 0.005 285)"}
+            style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text-muted)" }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "var(--admin-border)"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "var(--admin-surface-hover)"}
           >
             Cancelar
           </button>

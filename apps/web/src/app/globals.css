@@ -5,7 +5,7 @@
 /* ═══════════════════════════════════════════════
    Admin Theme — CSS variables + animation tokens
    ═══════════════════════════════════════════════ */
-.admin-theme {
+.admin-theme.dark {
   --gold: oklch(0.78 0.13 80);
   --gold-dim: oklch(0.78 0.13 80 / 0.15);
   --admin-bg: oklch(0.08 0.005 285);
@@ -22,6 +22,28 @@
   --admin-active-bg: oklch(0.15 0.1 150 / 0.2);
   --admin-active-text: oklch(0.6 0.15 150);
   --admin-destructive: oklch(0.6 0.22 27);
+  --admin-slide-in: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --admin-slide-up: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --admin-fade-in: fadeIn 0.5s ease forwards;
+}
+
+.admin-theme.light {
+  --gold: oklch(0.72 0.14 75);
+  --gold-dim: oklch(0.72 0.14 75 / 0.12);
+  --admin-bg: oklch(0.97 0.005 90);
+  --admin-surface: oklch(1 0 0);
+  --admin-surface-hover: oklch(0.94 0.005 90);
+  --admin-surface-active: oklch(0.9 0.005 90);
+  --admin-border: oklch(0.86 0.005 90);
+  --admin-text: oklch(0.12 0.005 285);
+  --admin-text-muted: oklch(0.5 0.01 285);
+  --admin-text-dim: oklch(0.55 0.01 285);
+  --admin-input-bg: oklch(1 0 0);
+  --admin-input-border: oklch(0.86 0.005 90);
+  --admin-input-focus: var(--gold);
+  --admin-active-bg: oklch(0.15 0.1 150 / 0.2);
+  --admin-active-text: oklch(0.45 0.15 150);
+  --admin-destructive: oklch(0.55 0.2 27);
   --admin-slide-in: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --admin-slide-up: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --admin-fade-in: fadeIn 0.5s ease forwards;

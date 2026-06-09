@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api-client";
-import { Loader2 } from "lucide-react";
+import { Moon, Sun, Loader2 } from "lucide-react";
 
 interface AdminUser {
   id: string;
@@ -17,6 +17,23 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("comesana.admin.theme") as "light" | "dark" | null;
+    if (stored) setTheme(stored);
+    else setTheme("light");
+    setMounted(true);
+  }, []);
+
+  const toggle = () => {
+    setTheme((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      localStorage.setItem("comesana.admin.theme", next);
+      return next;
+    });
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +51,20 @@ export default function AdminLogin() {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ background: "oklch(0.08 0.005 285)" }}
+      className={`admin-theme ${mounted ? theme : "dark"} flex min-h-screen items-center justify-center`}
+      style={{ background: "var(--admin-bg)" }}
     >
+      {/* Theme toggle */}
+      <button
+        onClick={toggle}
+        className="fixed right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-lg transition-all"
+        style={{ color: "var(--admin-text-muted)" }}
+        onMouseEnter={(e) => e.currentTarget.style.background = "var(--admin-surface-hover)"}
+        onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+      >
+        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </button>
+
       {/* Noise texture */}
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.03]"
@@ -50,32 +78,32 @@ export default function AdminLogin() {
       <div
         className="relative w-full max-w-sm rounded-2xl border p-8"
         style={{
-          background: "oklch(0.12 0.005 285)",
-          borderColor: "oklch(0.2 0.005 285)",
+          background: "var(--admin-surface)",
+          borderColor: "var(--admin-border)",
           boxShadow: "0 0 60px oklch(0.78 0.13 80 / 0.06)",
         }}
       >
         <div className="text-center">
           <div
             className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold"
-            style={{ background: "oklch(0.78 0.13 80)", color: "oklch(0.08 0.005 285)" }}
+            style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
           >
             CP
           </div>
           <h1
             className="mt-4 font-display text-xl font-bold tracking-tight"
-            style={{ fontFamily: "var(--font-display)", color: "oklch(0.98 0 0)" }}
+            style={{ fontFamily: "var(--font-display)", color: "var(--admin-text)" }}
           >
             Panel de Administración
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "oklch(0.5 0.01 285)" }}>
+          <p className="mt-1 text-sm" style={{ color: "var(--admin-text-muted)" }}>
             Acceso restringido
           </p>
         </div>
 
         <form onSubmit={submit} className="mt-8 space-y-4">
           <div>
-            <div className="mb-1.5 text-[11px] font-medium" style={{ color: "oklch(0.6 0.01 285)" }}>
+            <div className="mb-1.5 text-[11px] font-medium" style={{ color: "var(--admin-text-muted)" }}>
               Email
             </div>
             <input
@@ -84,22 +112,22 @@ export default function AdminLogin() {
               placeholder="admin@comesana.com"
               style={{
                 width: "100%",
-                background: "oklch(0.14 0.005 285)",
-                border: "1px solid oklch(0.22 0.005 285)",
-                color: "oklch(0.98 0 0)",
+                background: "var(--admin-surface-hover)",
+                border: "1px solid var(--admin-input-border)",
+                color: "var(--admin-text)",
                 borderRadius: "8px",
                 padding: "10px 14px",
                 fontSize: "14px",
                 outline: "none",
                 transition: "border-color 0.2s",
               }}
-              onFocus={(e) => e.target.style.borderColor = "oklch(0.78 0.13 80)"}
-              onBlur={(e) => e.target.style.borderColor = "oklch(0.22 0.005 285)"}
+              onFocus={(e) => e.target.style.borderColor = "var(--gold)"}
+              onBlur={(e) => e.target.style.borderColor = "var(--admin-input-border)"}
             />
           </div>
 
           <div>
-            <div className="mb-1.5 text-[11px] font-medium" style={{ color: "oklch(0.6 0.01 285)" }}>
+            <div className="mb-1.5 text-[11px] font-medium" style={{ color: "var(--admin-text-muted)" }}>
               Contraseña
             </div>
             <input
@@ -109,22 +137,22 @@ export default function AdminLogin() {
               placeholder="••••••••"
               style={{
                 width: "100%",
-                background: "oklch(0.14 0.005 285)",
-                border: "1px solid oklch(0.22 0.005 285)",
-                color: "oklch(0.98 0 0)",
+                background: "var(--admin-surface-hover)",
+                border: "1px solid var(--admin-input-border)",
+                color: "var(--admin-text)",
                 borderRadius: "8px",
                 padding: "10px 14px",
                 fontSize: "14px",
                 outline: "none",
                 transition: "border-color 0.2s",
               }}
-              onFocus={(e) => e.target.style.borderColor = "oklch(0.78 0.13 80)"}
-              onBlur={(e) => e.target.style.borderColor = "oklch(0.22 0.005 285)"}
+              onFocus={(e) => e.target.style.borderColor = "var(--gold)"}
+              onBlur={(e) => e.target.style.borderColor = "var(--admin-input-border)"}
             />
           </div>
 
           {err && (
-            <div className="text-xs" style={{ color: "oklch(0.6 0.22 27)" }}>
+            <div className="text-xs" style={{ color: "var(--admin-destructive)" }}>
               {err}
             </div>
           )}
@@ -132,7 +160,7 @@ export default function AdminLogin() {
           <button
             disabled={loading}
             className="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all disabled:opacity-50"
-            style={{ background: "oklch(0.78 0.13 80)", color: "oklch(0.08 0.005 285)" }}
+            style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
             onMouseEnter={(e) => { if (!loading) e.currentTarget.style.filter = "brightness(1.1)"; }}
             onMouseLeave={(e) => { if (!loading) e.currentTarget.style.filter = "none"; }}
           >
