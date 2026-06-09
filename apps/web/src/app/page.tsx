@@ -86,84 +86,72 @@ export default function HomePage() {
             src={hero}
             alt="La Plata y Mar del Plata"
             fill
-            className="object-cover"
+            className="object-cover animate-hero-zoom"
             priority
+            sizes="100vw"
+            quality={100}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-black/80 z-20 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10 z-20 pointer-events-none" />
           <div className="absolute inset-0 noise-overlay opacity-[0.08] z-30 pointer-events-none" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6 z-40">
-          {/* Mobile: name + WhatsApp text */}
-          <div className="flex flex-col items-center justify-center py-24 md:hidden">
-            <span className="text-xs font-medium tracking-wide text-white/60">Paola Comesaña · Col. 7470</span>
-            <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-1">
-              <a
-                href={`https://wa.me/${WHATSAPP}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white"
-              >
-                <MessageCircle className="h-4 w-4 text-[oklch(0.55_0.15_150)]" />
-                +54 9 2215 05-8811
-              </a>
-              <a
-                href={`https://wa.me/${WHATSAPP_VISITA}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white"
-              >
-                <Navigation className="h-4 w-4 text-[oklch(0.55_0.15_150)]" />
-                +54 9 2215 43-7743
-              </a>
-            </div>
-          </div>
+          {/* Mobile: just the background image */}
+          <div className="md:hidden" style={{ height: "50vh" }} />
 
           {/* Desktop: text content */}
-          <div className="hidden py-32 md:block md:py-44">
-            <div className="max-w-3xl">
-              <p className="animate-slide-up text-lg text-[oklch(0.8_0_0)] md:text-xl">
-                Propiedades en La Plata y Mar del Plata. Encontrá la tuya con asesoramiento profesional.
-              </p>
-              <div className="animate-slide-up delay-1 mt-6 flex flex-wrap gap-x-6 gap-y-2">
-                <a
-                  href={`https://wa.me/${WHATSAPP}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white md:text-base"
-                >
-                  <MessageCircle className="h-4 w-4 text-[oklch(0.55_0.15_150)]" />
-                  +54 9 2215 05-8811
-                </a>
-                <a
-                  href={`https://wa.me/${WHATSAPP_VISITA}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white md:text-base"
-                >
-                  <Navigation className="h-4 w-4 text-[oklch(0.55_0.15_150)]" />
-                  +54 9 2215 43-7743
-                </a>
+          <div className="hidden md:block">
+            <div className="flex min-h-[85vh] flex-col justify-end pb-24">
+              <div className="max-w-4xl">
+                <p className="animate-slide-up font-display text-3xl leading-[1.1] tracking-tight text-white drop-shadow-xl md:text-6xl md:leading-[1.1]">
+                  Propiedades en La Plata
+                  <br />
+                  y Mar del Plata.
+                  <br />
+                  <span className="text-[oklch(0.78_0.13_80)] italic drop-shadow-lg text-xl md:text-3xl">
+                    Encontrá la tuya.
+                  </span>
+                </p>
+                <div className="animate-slide-up delay-1 mt-10 flex flex-wrap gap-x-8 gap-y-3">
+                  <a
+                    href={`https://wa.me/${WHATSAPP}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-lg text-white/80 transition hover:text-white drop-shadow-md"
+                  >
+                    <MessageCircle className="h-5 w-5 text-[oklch(0.55_0.15_150)]" />
+                    +54 9 2215 05-8811
+                  </a>
+                  <a
+                    href={`https://wa.me/${WHATSAPP_VISITA}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-lg text-white/80 transition hover:text-white drop-shadow-md"
+                  >
+                    <Navigation className="h-5 w-5 text-[oklch(0.55_0.15_150)]" />
+                    +54 9 2215 43-7743
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── FILTERS BAR (below hero on mobile, inside hero on desktop) ── */}
+      {/* ── FILTERS BAR ── */}
       <div className="relative z-50 mx-auto max-w-7xl px-6 -mt-6 md:-mt-10">
-        <div className="animate-slide-up grid gap-3 rounded-2xl border p-4 md:grid-cols-6 max-md:border-border max-md:bg-card md:border-white/15 md:bg-white/5 md:backdrop-blur-xl">
+        <div className="animate-slide-up grid gap-3 rounded-2xl border border-white/20 bg-[oklch(0.13_0.005_285)/75] p-4 backdrop-blur-md md:grid-cols-6">
           <select
             value={ciudad}
             onChange={(e) => {
               setCiudad(e.target.value as "" | Ciudad);
               setZona("");
             }}
-            className="rounded-lg border px-3 py-3 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white"
+            className="rounded-lg border border-white/20 bg-black/40 px-3 py-3 text-sm text-white backdrop-blur-sm"
           >
-            <option value="">Ciudad</option>
+            <option value="" className="text-foreground">Ciudad</option>
             {CIUDADES.map((c) => (
-              <option key={c}>{c}</option>
+              <option key={c} className="text-foreground">{c}</option>
             ))}
           </select>
           <select
@@ -171,35 +159,35 @@ export default function HomePage() {
             onChange={(e) =>
               setOp(e.target.value as "Venta" | "Alquiler" | "")
             }
-            className="rounded-lg border px-3 py-3 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white"
+            className="rounded-lg border border-white/20 bg-black/40 px-3 py-3 text-sm text-white backdrop-blur-sm"
           >
-            <option value="">Operación</option>
-            <option>Venta</option>
-            <option>Alquiler</option>
+            <option value="" className="text-foreground">Operación</option>
+            <option className="text-foreground">Venta</option>
+            <option className="text-foreground">Alquiler</option>
           </select>
           <select
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
-            className="rounded-lg border px-3 py-3 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white"
+            className="rounded-lg border border-white/20 bg-black/40 px-3 py-3 text-sm text-white backdrop-blur-sm"
           >
-            <option value="">Tipo</option>
-            <option>Casa</option>
-            <option>Depto</option>
-            <option>PH</option>
-            <option>Local</option>
+            <option value="" className="text-foreground">Tipo</option>
+            <option className="text-foreground">Casa</option>
+            <option className="text-foreground">Depto</option>
+            <option className="text-foreground">PH</option>
+            <option className="text-foreground">Local</option>
           </select>
           <select
             value={zona}
             onChange={(e) => setZona(e.target.value)}
-            className="rounded-lg border px-3 py-3 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white"
+            className="rounded-lg border border-white/20 bg-black/40 px-3 py-3 text-sm text-white backdrop-blur-sm"
           >
-            <option value="">Zona</option>
+            <option value="" className="text-foreground">Zona</option>
             {barriosDisponibles.map((b) => (
-              <option key={b}>{b}</option>
+              <option key={b} className="text-foreground">{b}</option>
             ))}
           </select>
-          <div className="flex flex-col justify-center rounded-lg border px-3 py-2 text-sm backdrop-blur-md max-md:bg-background max-md:text-foreground max-md:border-border md:border-white/20 md:bg-white/10 md:text-white">
-            <label className="text-[10px] uppercase tracking-wider max-md:text-muted-foreground md:text-white/60">
+          <div className="flex flex-col justify-center rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm text-white backdrop-blur-sm">
+            <label className="text-[10px] uppercase tracking-wider text-white/60">
               Precio máx · USD {maxPrice.toLocaleString()}
             </label>
             <input
