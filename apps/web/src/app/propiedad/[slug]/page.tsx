@@ -320,63 +320,64 @@ export default function PropertyPage({ params }: Props) {
             </div>
 
             {/* Desktop: adaptive mosaic */}
-            <div
-              className={`hidden animate-slide-up gap-2 md:grid ${
-                photoCount >= 5 ? "grid-cols-4 grid-rows-2" :
-                photoCount === 4 ? "grid-cols-4 grid-rows-2" :
-                photoCount === 3 ? "grid-cols-3 grid-rows-2" :
-                photoCount === 2 ? "grid-cols-2 grid-rows-1" :
-                "grid-cols-1"
-              }`}
-            >
+            <div className="hidden animate-slide-up md:block" style={{ height: "500px" }}>
               <div
-                className={`relative cursor-pointer overflow-hidden rounded-2xl bg-muted ${
-                  photoCount >= 3 ? "col-span-2 row-span-2" : "col-span-1"
+                className={`grid h-full gap-2 ${
+                  photoCount >= 5 ? "grid-cols-4 grid-rows-2" :
+                  photoCount === 4 ? "grid-cols-4 grid-rows-2" :
+                  photoCount === 3 ? "grid-cols-3 grid-rows-2" :
+                  photoCount === 2 ? "grid-cols-2 grid-rows-1" :
+                  "grid-cols-1"
                 }`}
-                onClick={() => setLightboxIdx(0)}
-                style={{ minHeight: photoCount >= 3 ? "auto" : "400px" }}
               >
-                <img
-                  src={photos[0]}
-                  alt={`${p.tipo} en ${p.barrio}, ${p.ciudad}`}
-                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm">
-                  <ImageIcon className="h-3.5 w-3.5" />
-                  {photoCount} fotos
-                </div>
-              </div>
-              {desktopThumbs.map((f, i) => (
                 <div
-                  key={f}
-                  className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted"
-                  onClick={() => setLightboxIdx(i + 1)}
+                  className={`relative cursor-pointer overflow-hidden rounded-2xl bg-muted ${
+                    photoCount >= 3 ? "col-span-2 row-span-2" : "col-span-1"
+                  }`}
+                  onClick={() => setLightboxIdx(0)}
                 >
                   <img
-                    src={f}
-                    alt={`${p.tipo} en ${p.barrio} — foto ${i + 2}`}
+                    src={photos[0]}
+                    alt={`${p.tipo} en ${p.barrio}, ${p.ciudad}`}
                     className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                    loading="eager"
                   />
-                </div>
-              ))}
-              {remainingOffset > 0 && overlayIdx < photoCount && (
-                <div
-                  className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-muted"
-                  onClick={() => setLightboxIdx(overlayIdx)}
-                >
-                  <img
-                    src={photos[overlayIdx]}
-                    alt=""
-                    className="h-full w-full object-cover"
-                    loading="eager"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-lg font-bold text-white backdrop-blur-sm">
-                    +{remainingOffset}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                  <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    {photoCount} fotos
                   </div>
                 </div>
-              )}
+                {desktopThumbs.map((f, i) => (
+                  <div
+                    key={f}
+                    className="relative cursor-pointer overflow-hidden rounded-2xl bg-muted"
+                    onClick={() => setLightboxIdx(i + 1)}
+                  >
+                    <img
+                      src={f}
+                      alt={`${p.tipo} en ${p.barrio} — foto ${i + 2}`}
+                      className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                      loading="eager"
+                    />
+                  </div>
+                ))}
+                {remainingOffset > 0 && overlayIdx < photoCount && (
+                  <div
+                    className="relative cursor-pointer overflow-hidden rounded-2xl bg-muted"
+                    onClick={() => setLightboxIdx(overlayIdx)}
+                  >
+                    <img
+                      src={photos[overlayIdx]}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      loading="eager"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-lg font-bold text-white backdrop-blur-sm">
+                      +{remainingOffset}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </>
         ) : (
@@ -684,16 +685,6 @@ export default function PropertyPage({ params }: Props) {
                 <Share2 className="h-4 w-4" />
                 Compartir
               </button>
-              <div className="mt-4 flex flex-col items-center gap-2 rounded-xl border border-border p-4">
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  QR de la propiedad
-                </div>
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`${SITE_URL}/propiedad/${p.id}`)}`}
-                  alt="QR de la propiedad"
-                  className="h-24 w-24"
-                />
-              </div>
             </div>
 
             <div className="animate-slide-up rounded-2xl border border-border bg-card p-6 delay-3">

@@ -94,60 +94,54 @@ export default function HomePage() {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6 z-40">
-          {/* Mobile: logo + WhatsApp */}
-          <div className="flex flex-col items-center justify-center py-16 md:hidden">
-            <Image
-              src={logo}
-              alt="Comesaña Propiedades"
-              className="h-12 w-auto"
-              priority
-            />
-            <span className="mt-1 text-xs font-medium tracking-wide text-white/60">Paola Comesaña · Col. 7470</span>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {/* Mobile: name + WhatsApp text */}
+          <div className="flex flex-col items-center justify-center py-24 md:hidden">
+            <span className="text-xs font-medium tracking-wide text-white/60">Paola Comesaña · Col. 7470</span>
+            <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-1">
               <a
                 href={`https://wa.me/${WHATSAPP}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full bg-[oklch(0.55_0.15_150)] px-3 py-1.5 text-[11px] font-medium text-white transition hover:brightness-110"
+                className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white"
               >
-                <MessageCircle className="h-3.5 w-3.5" />
+                <MessageCircle className="h-4 w-4 text-[oklch(0.55_0.15_150)]" />
                 +54 9 2215 05-8811
               </a>
               <a
                 href={`https://wa.me/${WHATSAPP_VISITA}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm transition hover:bg-white/10"
+                className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white"
               >
-                <Navigation className="h-3.5 w-3.5" />
+                <Navigation className="h-4 w-4 text-[oklch(0.55_0.15_150)]" />
                 +54 9 2215 43-7743
               </a>
             </div>
           </div>
 
           {/* Desktop: text content */}
-          <div className="hidden py-24 md:block md:py-32">
+          <div className="hidden py-32 md:block md:py-44">
             <div className="max-w-3xl">
               <p className="animate-slide-up text-lg text-[oklch(0.8_0_0)] md:text-xl">
                 Propiedades en La Plata y Mar del Plata. Encontrá la tuya con asesoramiento profesional.
               </p>
-              <div className="animate-slide-up delay-1 mt-6 flex flex-wrap gap-3">
+              <div className="animate-slide-up delay-1 mt-6 flex flex-wrap gap-x-6 gap-y-2">
                 <a
                   href={`https://wa.me/${WHATSAPP}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.55_0.15_150)] px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
+                  className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white md:text-base"
                 >
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-4 w-4 text-[oklch(0.55_0.15_150)]" />
                   +54 9 2215 05-8811
                 </a>
                 <a
                   href={`https://wa.me/${WHATSAPP_VISITA}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/10"
+                  className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white md:text-base"
                 >
-                  <Navigation className="h-4 w-4" />
+                  <Navigation className="h-4 w-4 text-[oklch(0.55_0.15_150)]" />
                   +54 9 2215 43-7743
                 </a>
               </div>
