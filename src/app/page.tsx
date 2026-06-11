@@ -3,13 +3,10 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { PropertyCard } from "@/components/PropertyCard";
-import { useProperties } from "@/hooks/useProperties";
 import { CIUDADES, getBarrios, type Ciudad } from "@/lib/properties";
-import { Search, Compass, MessageCircle, Building2, Shield, Star, MapPin, ArrowRight, ChevronRight, Quote } from "lucide-react";
+import { Search } from "lucide-react";
 import laPlata from "@/assets/images/la-plata.jpg";
 import loboMarino from "@/assets/images/lobo-marino.jpg";
 import logo from "@/assets/images/Logo2.png";
@@ -17,12 +14,7 @@ import logo from "@/assets/images/Logo2.png";
 // Toggle this for logo style: 'sharp' for crisp logo, 'blur' for diffused overlay
 const HERO_LOGO_STYLE = "sharp" as 'sharp' | 'blur';
 
-type Tab = "Todos" | "Venta" | "Alquiler" | "Casa" | "Depto" | "PH";
-
 export default function HomePage() {
-  const router = useRouter();
-  const [all] = useProperties();
-  const [tab, setTab] = useState<Tab>("Todos");
   const [ciudad, setCiudad] = useState<"" | Ciudad>("");
   const [op, setOp] = useState<"" | "Venta" | "Alquiler">("");
   const [tipo, setTipo] = useState("");
@@ -31,31 +23,19 @@ export default function HomePage() {
 
   const barriosDisponibles = useMemo(() => getBarrios(ciudad), [ciudad]);
 
-  const filtered = useMemo(() => {
-    return all.filter((p) => {
-      if (!p.activo) return false;
-      if (tab === "Venta" || tab === "Alquiler") {
-        if (p.operacion !== tab) return false;
-      }
-      if (tab === "Casa" || tab === "Depto" || tab === "PH") {
-        if (p.tipo !== tab) return false;
-      }
-      if (ciudad && (p.ciudad ?? "La Plata") !== ciudad) return false;
-      if (op && p.operacion !== op) return false;
-      if (tipo && p.tipo !== tipo) return false;
-      if (zona && p.barrio !== zona) return false;
-      if (p.moneda === "USD" && p.precio > maxPrice) return false;
-      return true;
-    });
-  }, [all, tab, ciudad, op, tipo, zona, maxPrice]);
-
-  const tabs: Tab[] = ["Todos", "Venta", "Alquiler", "Casa", "Depto", "PH"];
-
-  const filterByBarrio = (b: string, c: Ciudad) => {
-    router.push(`/busqueda?ciudad=${encodeURIComponent(c)}&barrio=${encodeURIComponent(b)}`);
-  };
-
-  const [barrioTab, setBarrioTab] = useState<Ciudad>("La Plata");
+  const searchHref = useMemo(() => {
+    const p = new URLSearchParams();
+    if (ciudad) p.set("ciudad", ciudad);
+    if (op) p.set("op", op);
+    if (tipo) p.set("tipo", tipo);
+    if (zona) p.set("barrio", zona);
+    if (maxPrice > 0) {
+      p.set("precioMax", String(maxPrice));
+      p.set("moneda", "USD");
+    }
+    const s = p.toString();
+    return `/busqueda${s ? `?${s}` : ""}`;
+  }, [ciudad, op, tipo, zona, maxPrice]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -209,7 +189,7 @@ export default function HomePage() {
               />
             </div>
             <Link
-              href="/busqueda"
+              href={searchHref}
               className="flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
             >
               <Search className="h-4 w-4" />
@@ -218,9 +198,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* ...rest of page unchanged... */}
-      {/* You can safely keep the rest of your content as is, pruning barrios and copy was already covered above */}
 
       <Footer />
     </div>
