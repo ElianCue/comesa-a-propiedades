@@ -139,7 +139,7 @@ export default function HomePage() {
             <h1 className="animate-slide-up delay-1 mt-4 font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl">
               Tu hogar,
               <br />
-              <span className="italic text-[oklch(0.78_0.13_80)]">
+              <span className="italic text-accent-light">
                 nuestra misión.
               </span>
             </h1>
@@ -205,12 +205,12 @@ export default function HomePage() {
                 step={5000}
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(+e.target.value)}
-                className="accent-[oklch(0.78_0.13_80)]"
+                className="accent-accent"
               />
             </div>
             <Link
               href="/busqueda"
-              className="flex items-center justify-center gap-2 rounded-lg bg-[oklch(0.78_0.13_80)] px-4 py-3 text-sm font-semibold text-[oklch(0.15_0_0)] transition hover:brightness-105"
+              className="flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
             >
               <Search className="h-4 w-4" />
               Buscar

@@ -43,6 +43,8 @@ const config: Config = {
         accent: {
           DEFAULT: "var(--accent)",
           foreground: "var(--accent-foreground)",
+          light: "var(--accent-light)",
+          "light-bg": "var(--accent-light-bg)",
         },
         popover: {
           DEFAULT: "var(--popover)",

@@ -7,7 +7,7 @@ import logo from "@/assets/images/Logo2.png";
 export function Footer() {
   return (
     <footer className="relative border-t border-border bg-card">
-      <div className="absolute -top-px left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.78_0.13_80/0.5)] to-transparent" />
+      <div className="absolute -top-px left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-light/50 to-transparent" />
 
       <div className="mx-auto max-w-7xl px-6 py-14">
         <div className="grid gap-10 md:grid-cols-4">
@@ -33,7 +33,7 @@ export function Footer() {
                 href={`https://wa.me/${WHATSAPP}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 py-1.5 transition hover:text-[oklch(0.55_0.15_150)]"
+                className="flex items-center gap-2 py-1.5 transition hover:text-accent"
               >
                 <MessageCircle className="h-4 w-4" />
                 +54 9 221 555 1234
@@ -72,17 +72,17 @@ export function Footer() {
             </h4>
             <div className="flex flex-col gap-2.5 text-sm text-muted-foreground">
               <a
-                href="#"
+                href="https://www.instagram.com/paolacomesaniapropiedades/?theme=dark" target="_blank" rel="noreferrer"
                 className="flex items-center gap-2 py-1.5 transition hover:text-foreground"
               >
                 <Instagram className="h-4 w-4" />
-                @comesana.propiedades
+                @paolacomesaniapropiedades
               </a>
               <a
                 href={`https://wa.me/${WHATSAPP}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 py-1.5 transition hover:text-[oklch(0.55_0.15_150)]"
+                className="flex items-center gap-2 py-1.5 transition hover:text-accent"
               >
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp

@@ -98,7 +98,7 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
                 <button key={c} onClick={() => set("ciudad", filters.ciudad === c ? "" : c)}
                   className={`flex-1 rounded-lg border px-3 py-2.5 text-xs font-medium transition ${
                     filters.ciudad === c
-                      ? "border-[oklch(0.78_0.13_80)] bg-[oklch(0.78_0.13_80/0.1)] text-[oklch(0.78_0.13_80)]"
+                      ? "border-[accent] bg-[oklch(0.78_0.13_80/0.1)] text-[accent]"
                       : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                   }`}
                 >{c}</button>
@@ -115,7 +115,7 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
                 <button key={o} onClick={() => set("op", filters.op === o ? "" : o)}
                   className={`flex-1 rounded-lg border px-3 py-2.5 text-xs font-medium transition ${
                     filters.op === o
-                      ? "border-[oklch(0.78_0.13_80)] bg-[oklch(0.78_0.13_80/0.1)] text-[oklch(0.78_0.13_80)]"
+                      ? "border-[accent] bg-[oklch(0.78_0.13_80/0.1)] text-[accent]"
                       : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                   }`}
                 >{o}</button>
@@ -134,7 +134,7 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
                   <button key={t} onClick={() => set("tipo", active ? filters.tipo.filter((x) => x !== t) : [...filters.tipo, t])}
                     className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                       active
-                        ? "border-[oklch(0.78_0.13_80)] bg-[oklch(0.78_0.13_80/0.1)] text-[oklch(0.78_0.13_80)]"
+                        ? "border-[accent] bg-[oklch(0.78_0.13_80/0.1)] text-[accent]"
                         : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                     }`}
                   >{t}</button>
@@ -159,7 +159,7 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
                   <button key={filters.ciudad ? b : b + i} onClick={() => set("barrio", active ? "" : b)}
                     className={`rounded-md border px-3 py-1.5 text-[11px] font-medium transition ${
                       active
-                        ? "border-[oklch(0.78_0.13_80)] bg-[oklch(0.78_0.13_80/0.1)] text-[oklch(0.78_0.13_80)]"
+                        ? "border-[accent] bg-[oklch(0.78_0.13_80/0.1)] text-[accent]"
                         : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                     }`}
                   >{b}</button>
@@ -196,7 +196,7 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
                 <button key={n} onClick={() => set("ambientes", filters.ambientes === n ? null : n)}
                   className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
                     filters.ambientes === n
-                      ? "border-[oklch(0.78_0.13_80)] bg-[oklch(0.78_0.13_80/0.1)] text-[oklch(0.78_0.13_80)]"
+                      ? "border-[accent] bg-[oklch(0.78_0.13_80/0.1)] text-[accent]"
                       : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                   }`}
                 >{n}+</button>
@@ -213,7 +213,7 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
                 <button key={n} onClick={() => set("dormitorios", filters.dormitorios === n ? null : n)}
                   className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
                     filters.dormitorios === n
-                      ? "border-[oklch(0.78_0.13_80)] bg-[oklch(0.78_0.13_80/0.1)] text-[oklch(0.78_0.13_80)]"
+                      ? "border-[accent] bg-[oklch(0.78_0.13_80/0.1)] text-[accent]"
                       : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                   }`}
                 >{n}+</button>
@@ -246,7 +246,7 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
                   <button key={a} onClick={() => set("amenities", active ? filters.amenities.filter((x) => x !== key) : [...filters.amenities, key])}
                     className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
                       active
-                        ? "border-[oklch(0.78_0.13_80)] bg-[oklch(0.78_0.13_80/0.1)] text-[oklch(0.78_0.13_80)]"
+                        ? "border-[accent] bg-[oklch(0.78_0.13_80/0.1)] text-[accent]"
                         : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                     }`}
                   >{a}</button>

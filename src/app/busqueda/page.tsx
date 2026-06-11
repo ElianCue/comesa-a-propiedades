@@ -96,7 +96,7 @@ function BusquedaContent() {
   const [all] = useProperties();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sort, setSort] = useState<SortKey>("relevance");
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const [view, setView] = useState<"grid" | "list">("list");
   const page = useMemo(() => Math.max(1, Number(params.get("page")) || 1), [params]);
 
   const filters = useMemo(() => parseFilters(params), [params]);
@@ -158,8 +158,8 @@ function BusquedaContent() {
               {filtered.length} resultado{filtered.length !== 1 ? "s" : ""}
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
+            <div className="flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-1 rounded-lg border border-border p-0.5">
               <button
                 onClick={() => setView("grid")}
                 className={`rounded-md p-1.5 transition ${
@@ -286,7 +286,7 @@ export default function BusquedaPage() {
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-background">
           <div className="text-center">
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[oklch(0.78_0.13_80)] border-t-transparent" />
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
             <p className="mt-4 text-sm text-muted-foreground">Cargando...</p>
           </div>
         </div>

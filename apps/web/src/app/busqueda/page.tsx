@@ -113,7 +113,7 @@ function BusquedaContent() {
   const [all] = useProperties();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sort, setSort] = useState<SortKey>("relevance");
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const [view, setView] = useState<"grid" | "list">("list");
   const page = useMemo(() => Math.max(1, Number(params.get("page")) || 1), [params]);
 
   const filters = useMemo(() => parseFilters(params), [params]);
@@ -208,7 +208,7 @@ function BusquedaContent() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
+              <div className="hidden md:flex items-center gap-1 rounded-lg border border-border p-0.5">
                 <button
                   onClick={() => setView("grid")}
                   className={`rounded-md p-1.5 transition ${

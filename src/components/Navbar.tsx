@@ -28,7 +28,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 border-b border-white/10 bg-[color:var(--background)_/0.95] backdrop-blur-xl">
+      <nav className="sticky top-0 z-[70] border-b border-white/10 bg-[color:var(--background)_/0.95] backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link href="/" className="group flex items-center gap-3">
             <Image
@@ -94,7 +94,7 @@ export function Navbar() {
 
       <div
         className={cn(
-          "fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col bg-background shadow-2xl transition-transform duration-300 ease-out md:hidden",
+          "fixed inset-y-0 right-0 z-[70] flex w-full max-w-sm flex-col bg-background shadow-2xl transition-transform duration-300 ease-out md:hidden",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >

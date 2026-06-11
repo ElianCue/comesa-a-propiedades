@@ -47,7 +47,7 @@ export function Pagination({ page, total, perPage, onChange }: Props) {
             onClick={() => onChange(p)}
             className={`flex h-10 min-w-[40px] items-center justify-center rounded-lg px-3 text-sm font-medium transition ${
               p === page
-                ? "bg-[oklch(0.78_0.13_80)] text-black"
+                ? "bg-accent text-white"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >

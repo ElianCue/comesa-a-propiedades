@@ -20,7 +20,7 @@ export function Footer() {
               />
               <div className="flex flex-col leading-tight">
                 <span className="text-sm font-semibold text-foreground/80">Paola Comesaña</span>
-                <span className="text-xs font-medium tracking-wide" style={{ color: "oklch(0.78 0.13 80)" }}>Col. 7470</span>
+                <span className="text-xs font-medium tracking-wide" style={{ color: "oklch(0.63 0.08 255)" }}>Col. 7470</span>
               </div>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -83,11 +83,11 @@ export function Footer() {
             </h4>
             <div className="flex flex-col gap-2.5 text-sm text-muted-foreground">
               <a
-                href="#"
+                href="https://www.instagram.com/paolacomesaniapropiedades/?theme=dark" target="_blank" rel="noreferrer"
                 className="flex items-center gap-2 py-1.5 transition hover:text-foreground"
               >
                 <Instagram className="h-4 w-4" />
-                @comesana.propiedades
+                @paolacomesaniapropiedades
               </a>
               <a
                 href={`https://wa.me/${WHATSAPP}`}

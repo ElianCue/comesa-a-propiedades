@@ -476,7 +476,7 @@ export default function PropertyPage({ params }: Props) {
 
             {/* Price + Address */}
             <div className="animate-slide-up delay-2">
-              <h1 className="font-display text-5xl font-bold tracking-tight text-[oklch(0.78_0.13_80)]">
+              <h1 className="text-4xl font-bold tracking-tight text-foreground">
                 {formatPriceFromProperty(p)}
               </h1>
               <p className="mt-2 text-lg text-foreground">{p.direccion}</p>
@@ -652,7 +652,7 @@ export default function PropertyPage({ params }: Props) {
                 </div>
                 <div>
                   <div className="font-semibold">Paola Comesaña</div>
-                  <div className="text-xs font-medium tracking-wide" style={{ color: "oklch(0.78 0.13 80)" }}>
+                  <div className="text-xs font-medium tracking-wide" style={{ color: "oklch(0.63 0.08 255)" }}>
                     Col. 7470
                   </div>
                   <div className="text-xs text-muted-foreground mt-0.5">
