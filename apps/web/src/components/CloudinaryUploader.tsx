@@ -11,43 +11,62 @@ interface Props {
 
 export function CloudinaryUploader({ images, onChange, max = 10 }: Props) {
   const [uploading, setUploading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setErrorMsg(null);
+
     if (file.size > 5 * 1024 * 1024) {
-      alert("La imagen no puede superar los 5MB");
+      setErrorMsg("La imagen no puede superar los 5MB");
       return;
     }
 
     const validTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      alert("Solo se permiten JPG, PNG y WebP");
+      setErrorMsg("Solo se permiten JPG, PNG y WebP");
       return;
     }
 
     setUploading(true);
 
     try {
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+      if (!cloudName || !uploadPreset) {
+        setErrorMsg("Error de configuración: faltan variables de Cloudinary");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
+      formData.append("upload_preset", uploadPreset);
 
       const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
         { method: "POST", body: formData }
       );
 
       const data = await res.json();
+
+      if (data.error) {
+        console.error("Cloudinary error:", data.error);
+        setErrorMsg(data.error.message || "Error al subir la imagen");
+        return;
+      }
+
       if (data.secure_url) {
         onChange([...images, data.secure_url]);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Upload error:", err);
-      alert("Error al subir la imagen");
+      setErrorMsg(err?.message || "Error de red al subir la imagen");
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -57,10 +76,20 @@ export function CloudinaryUploader({ images, onChange, max = 10 }: Props) {
 
   return (
     <div className="space-y-2">
+      {errorMsg && (
+        <div className="rounded-lg px-3 py-2 text-xs" style={{ background: "var(--admin-destructive)", color: "#fff" }}>
+          {errorMsg}
+        </div>
+      )}
       <div className="flex flex-wrap gap-2">
         {images.map((url, i) => (
-          <div key={i} className="group relative h-20 w-20 overflow-hidden rounded-lg border border-border">
-            <img src={url} alt="" className="h-full w-full object-cover" />
+          <div key={i} className="group relative h-20 w-20 overflow-hidden rounded-lg" style={{ border: "1px solid var(--admin-border)" }}>
+            <img
+              src={url}
+              alt=""
+              className="h-full w-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
             <button
               type="button"
               onClick={() => removeImage(i)}
@@ -71,11 +100,11 @@ export function CloudinaryUploader({ images, onChange, max = 10 }: Props) {
           </div>
         ))}
         {images.length < max && (
-          <label className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-border text-muted-foreground transition hover:border-foreground/30 hover:text-foreground">
+          <label className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition" style={{ borderColor: "var(--admin-input-border)" }}>
             {uploading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--gold)" }} />
             ) : (
-              <Upload className="h-5 w-5" />
+              <Upload className="h-5 w-5" style={{ color: "var(--admin-text-muted)" }} />
             )}
             <input
               type="file"
