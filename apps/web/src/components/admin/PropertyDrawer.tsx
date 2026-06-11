@@ -270,14 +270,37 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
       />
       <form
         onSubmit={submit}
-        className="relative z-10 flex w-full max-w-lg flex-col overflow-hidden"
+        className="drawer-form relative z-10 flex w-full max-w-lg flex-col overflow-hidden"
         style={{
           background: "var(--admin-surface)",
           borderLeft: "1px solid var(--admin-border)",
           animation: "slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
-        <style>{`@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
+        <style>{`
+          @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+          .drawer-form input, .drawer-form select, .drawer-form textarea {
+            background: var(--admin-surface-hover) !important;
+            border: 1px solid var(--admin-input-border) !important;
+            color: var(--admin-text) !important;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+          }
+          .drawer-form input:focus, .drawer-form select:focus, .drawer-form textarea:focus {
+            border-color: var(--gold) !important;
+          }
+          .drawer-form select option {
+            background: var(--admin-surface);
+            color: var(--admin-text);
+          }
+          .drawer-form input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+          }
+        `}</style>
 
         {/* Header */}
         <div
@@ -286,7 +309,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
         >
           <h2
             className="font-display text-lg font-semibold tracking-tight"
-            style={{ fontFamily: "var(--font-display)" }}
+            style={{ fontFamily: "var(--font-display)", color: "var(--admin-text)" }}
           >
             {p.id ? "Editar propiedad" : "Nueva propiedad"}
           </h2>
@@ -579,6 +602,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                           onClick={() => toggleAmenity(amenity.nombre)}
                           className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all"
                           style={{
+                            color: "var(--admin-text)",
                             background: active ? "var(--gold-dim)" : "var(--admin-surface-hover)",
                             outline: active ? "1px solid var(--gold)" : "1px solid var(--admin-input-border)",
                           }}
@@ -592,7 +616,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                           >
                             {active ? "✓" : ""}
                           </div>
-                          <div className="ml-2">{amenity.nombre}</div>
+                          <div>{amenity.nombre}</div>
                         </button>
                       );
                     })}
@@ -611,7 +635,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
           </Section>
 
           <div className="space-y-3">
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)" }}>
+            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}>
               <input
                 type="checkbox"
                 checked={p.activo}
@@ -635,7 +659,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
               </div>
               Propiedad activa
             </label>
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)" }}>
+            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}>
               <input
                 type="checkbox"
                 checked={p.aptoBanco}
@@ -659,7 +683,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
               </div>
               Apto banco
             </label>
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)" }}>
+            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}>
               <input
                 type="checkbox"
                 checked={p.permuta}
