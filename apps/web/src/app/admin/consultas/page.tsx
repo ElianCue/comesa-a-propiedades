@@ -138,8 +138,8 @@ export default function AdminConsultas() {
                     <span className="font-semibold">{inq.nombre}</span>
                     {!inq.leido && (
                       <span
-                        className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
-                        style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
+                        className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white"
+                        style={{ background: "var(--gold)" }}
                       >
                         Nuevo
                       </span>

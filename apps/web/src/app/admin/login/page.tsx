@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api-client";
 import { Moon, Sun, Loader2 } from "lucide-react";
+import logo from "@/assets/images/Logo2.png";
 
 interface AdminUser {
   id: string;
@@ -84,11 +86,8 @@ export default function AdminLogin() {
         }}
       >
         <div className="text-center">
-          <div
-            className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold"
-            style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
-          >
-            CP
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden" style={{ background: "var(--gold)" }}>
+            <Image src={logo} alt="" className="h-8 w-8 object-contain" />
           </div>
           <h1
             className="mt-4 font-display text-xl font-bold tracking-tight"
@@ -159,8 +158,8 @@ export default function AdminLogin() {
 
           <button
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all disabled:opacity-50"
-            style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-50"
+            style={{ background: "var(--gold)" }}
             onMouseEnter={(e) => { if (!loading) e.currentTarget.style.filter = "brightness(1.1)"; }}
             onMouseLeave={(e) => { if (!loading) e.currentTarget.style.filter = "none"; }}
           >

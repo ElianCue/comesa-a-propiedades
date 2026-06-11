@@ -166,15 +166,15 @@ export default function AdminProperties() {
             <SlidersHorizontal className="h-4 w-4" />
             Filtros
             {activeFilterCount > 0 && (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white" style={{ background: "var(--gold)" }}>
                 {activeFilterCount}
               </span>
             )}
           </button>
           <button
             onClick={() => setDrawer("new")}
-            className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all"
-            style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all"
+            style={{ background: "var(--gold)" }}
             onMouseEnter={(e) => e.currentTarget.style.filter = "brightness(1.1)"}
             onMouseLeave={(e) => e.currentTarget.style.filter = "none"}
           >

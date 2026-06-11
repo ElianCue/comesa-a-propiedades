@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { api } from "@/lib/api-client";
+import Image from "next/image";
 import {
   Building2,
   MessageSquare,
@@ -14,6 +15,7 @@ import {
   Moon,
   Sun,
 } from "lucide-react";
+import logo from "@/assets/images/Logo2.png";
 
 interface AdminUser {
   id: string;
@@ -90,7 +92,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { href: "/admin", label: "Propiedades", icon: Building2 },
-    { href: "/admin/consultas", label: "Consultas", icon: MessageSquare },
   ];
 
   return (
@@ -141,11 +142,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }}
       >
         <div className="flex h-16 items-center gap-3 border-b px-5" style={{ borderColor: "var(--admin-border)" }}>
-          <div
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
-            style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
-          >
-            CP
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden" style={{ background: "var(--gold)" }}>
+            <Image src={logo} alt="" className="h-6 w-6 object-contain" />
           </div>
           <span className="font-display text-lg font-bold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
             Admin
@@ -217,11 +215,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             <Menu className="h-5 w-5" style={{ color: "var(--admin-text-muted)" }} />
           </button>
-          <div
-            className="flex h-7 w-7 items-center justify-center rounded text-xs font-bold"
-            style={{ background: "var(--gold)", color: "oklch(0.08 0.005 285)" }}
-          >
-            CP
+          <div className="flex h-7 w-7 items-center justify-center rounded overflow-hidden" style={{ background: "var(--gold)" }}>
+            <Image src={logo} alt="" className="h-5 w-5 object-contain" />
           </div>
           <span className="font-display text-base font-bold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
             Admin
