@@ -63,7 +63,7 @@ model Amenity {
 model Property {
   id               String   @id @default(cuid())
   city_id          String
-  barrio_id        String
+  barrio_id        String?
   property_type_id String
   operation_id     String
   currency_id      String
@@ -91,7 +91,7 @@ model Property {
   updated_at       DateTime @updatedAt
 
   city          City             @relation(fields: [city_id], references: [id])
-  barrio        Barrio           @relation(fields: [barrio_id], references: [id])
+  barrio        Barrio?          @relation(fields: [barrio_id], references: [id])
   property_type PropertyType     @relation(fields: [property_type_id], references: [id])
   operation     Operation        @relation(fields: [operation_id], references: [id])
   currency      Currency         @relation(fields: [currency_id], references: [id])

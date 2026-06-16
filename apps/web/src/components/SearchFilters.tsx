@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { api } from "@/lib/api-client";
 import { CIUDADES, getBarrios, type Ciudad } from "@/lib/properties";
-import { Search, RotateCcw, X } from "lucide-react";
+import { Search, RotateCcw, X, Loader2 } from "lucide-react";
 
 export interface Filters {
   ciudad: "" | Ciudad;
@@ -41,11 +42,34 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
   const set = <K extends keyof Filters>(k: K, v: Filters[K]) =>
     onChange({ ...filters, [k]: v });
 
-  const barriosDisponibles = useMemo(() => getBarrios(filters.ciudad), [filters.ciudad]);
+  const [cities, setCities] = useState<{ id: string; nombre: string }[]>(
+    CIUDADES.map((n) => ({ id: n, nombre: n }))
+  );
+  const [barrios, setBarrios] = useState<string[]>([]);
   const [barrioSearch, setBarrioSearch] = useState("");
 
-  const barriosFiltrados = barriosDisponibles.filter((b) =>
-    b.toLowerCase().includes(barrioSearch.toLowerCase())
+  useEffect(() => {
+    api.get<any[]>("/api/lookup/cities")
+      .then((cities) => setCities(cities ?? []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!filters.ciudad) { setBarrios([]); return; }
+    const city = cities.find((c) => c.nombre === filters.ciudad);
+    if (!city) return;
+    if (city.id === filters.ciudad) {
+      setBarrios(getBarrios(filters.ciudad));
+      return;
+    }
+    api.get<any[]>(`/api/lookup/cities/${city.id}/barrios`)
+      .then((barrios) => setBarrios((barrios ?? []).map((b: any) => b.nombre)))
+      .catch(() => setBarrios([]));
+  }, [filters.ciudad, cities]);
+
+  const barriosFiltrados = useMemo(
+    () => barrios.filter((b) => b.toLowerCase().includes(barrioSearch.toLowerCase())),
+    [barrios, barrioSearch]
   );
 
   const activeCount = [
@@ -99,14 +123,14 @@ export function SearchFilters({ filters, onChange, onClose }: Props) {
           <section>
             <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Ciudad</h3>
             <div className="flex gap-1.5">
-              {CIUDADES.map((c) => (
-                <button key={c} onClick={() => set("ciudad", filters.ciudad === c ? "" : c)}
+              {cities.map((c) => (
+                <button key={c.id} onClick={() => set("ciudad", filters.ciudad === c.nombre ? "" : c.nombre)}
                   className={`flex-1 rounded-lg border px-3 py-2.5 text-xs font-medium transition ${
-                    filters.ciudad === c
+                    filters.ciudad === c.nombre
                       ? "border-[oklch(0.78_0.13_80)] bg-[oklch(0.78_0.13_80/0.1)] text-[oklch(0.78_0.13_80)]"
                       : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                   }`}
-                >{c}</button>
+                >{c.nombre}</button>
               ))}
             </div>
           </section>

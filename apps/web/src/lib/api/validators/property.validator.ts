@@ -12,7 +12,7 @@ export const propertyQuerySchema = z.object({
 
 export const createPropertySchema = z.object({
   ciudad: z.string().min(1),
-  barrio: z.string().min(1),
+  barrio: z.string().optional(),
   tipo: z.string().min(1),
   operacion: z.string().min(1),
   moneda: z.enum(["USD", "ARS"]),

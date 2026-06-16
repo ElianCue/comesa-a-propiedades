@@ -12,11 +12,19 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, { error: Er
   componentDidCatch(error: Error, info: { componentStack: string }) {
     console.error("ErrorBoundary caught:", error, info.componentStack);
   }
+  handleRetry = () => this.setState({ error: null });
   render() {
     if (this.state.error) {
       return (
         <div className="rounded-lg border border-red-500/30 bg-red-950/20 p-4 text-sm text-red-400">
           <strong>Error de render:</strong> {this.state.error.message}
+          <button
+            type="button"
+            onClick={this.handleRetry}
+            className="ml-3 rounded-md border border-red-500/30 px-3 py-1 text-xs font-medium text-red-400 transition hover:bg-red-950/30"
+          >
+            Reintentar
+          </button>
         </div>
       );
     }
@@ -234,7 +242,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
        };
 
        if (!p.id) {
-         const required = ["ciudad", "barrio", "tipo", "operacion", "direccion", "descripcion"] as const;
+          const required = ["ciudad", "tipo", "operacion", "direccion", "descripcion"] as const;
          const missing = required.filter((k) => !body[k]);
          if (missing.length > 0) {
            setError(`Campos requeridos: ${missing.join(", ")}`);
@@ -513,31 +521,36 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                 <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em]" style={{ color: "var(--admin-text-muted)" }}>
                   Características adicionales
                 </div>
-                {p.detalles && Object.entries(p.detalles).map(([key, val]) => (
+                  {p.detalles && Object.entries(p.detalles).map(([key, val]) => (
                   <div key={key} className="mb-2 flex items-center gap-2">
                     <input
                       value={key}
                       onChange={(e) => {
-                        const newDetalles = { ...p.detalles };
-                        delete newDetalles[key];
-                        newDetalles[e.target.value] = val;
-                        setP({ ...p, detalles: newDetalles });
+                        const newKey = e.target.value;
+                        setP((prev) => {
+                          const newDetalles = { ...prev.detalles };
+                          delete newDetalles[key];
+                          newDetalles[newKey] = val;
+                          return { ...prev, detalles: newDetalles };
+                        });
                       }}
                       className="flex-1 rounded-lg px-3 py-2 text-sm"
                       style={{ background: "var(--admin-surface-hover)", border: "1px solid var(--admin-input-border)" }}
                     />
                     <input
                       value={val}
-                      onChange={(e) => setP({ ...p, detalles: { ...p.detalles, [key]: e.target.value } })}
+                      onChange={(e) => setP((prev) => ({ ...prev, detalles: { ...prev.detalles, [key]: e.target.value } }))}
                       className="flex-1 rounded-lg px-3 py-2 text-sm"
                       style={{ background: "var(--admin-surface-hover)", border: "1px solid var(--admin-input-border)" }}
                     />
                     <button
                       type="button"
                       onClick={() => {
-                        const newDetalles = { ...p.detalles };
-                        delete newDetalles[key];
-                        setP({ ...p, detalles: newDetalles });
+                        setP((prev) => {
+                          const newDetalles = { ...prev.detalles };
+                          delete newDetalles[key];
+                          return { ...prev, detalles: newDetalles };
+                        });
                       }}
                       className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
                       style={{ color: "var(--admin-text-muted)" }}
@@ -567,7 +580,9 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                     type="button"
                     onClick={() => {
                       if (newDetalleKey.trim() && newDetalleVal.trim()) {
-                        setP({ ...p, detalles: { ...p.detalles, [newDetalleKey.trim()]: newDetalleVal.trim() } });
+                        const key = newDetalleKey.trim();
+                        const val = newDetalleVal.trim();
+                        setP((prev) => ({ ...prev, detalles: { ...prev.detalles, [key]: val } }));
                         setNewDetalleKey("");
                         setNewDetalleVal("");
                       }
@@ -634,14 +649,14 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
             <CloudinaryUploader images={p.fotos} onChange={(fotos) => set("fotos", fotos)} />
           </Section>
 
-          <div className="space-y-3">
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}>
-              <input
-                type="checkbox"
-                checked={p.activo}
-                onChange={(e) => set("activo", e.target.checked)}
-                className="sr-only"
-              />
+           <div className="space-y-3">
+            <button
+              type="button"
+              aria-pressed={p.activo}
+              onClick={() => set("activo", !p.activo)}
+              className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm transition-all"
+              style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}
+            >
               <div
                 className="flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
                 style={{
@@ -658,14 +673,14 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                 />
               </div>
               Propiedad activa
-            </label>
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}>
-              <input
-                type="checkbox"
-                checked={p.aptoBanco}
-                onChange={(e) => set("aptoBanco", e.target.checked)}
-                className="sr-only"
-              />
+            </button>
+            <button
+              type="button"
+              aria-pressed={p.aptoBanco}
+              onClick={() => set("aptoBanco", !p.aptoBanco)}
+              className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm transition-all"
+              style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}
+            >
               <div
                 className="flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
                 style={{
@@ -682,14 +697,14 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                 />
               </div>
               Apto banco
-            </label>
-            <label className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}>
-              <input
-                type="checkbox"
-                checked={p.permuta}
-                onChange={(e) => set("permuta", e.target.checked)}
-                className="sr-only"
-              />
+            </button>
+            <button
+              type="button"
+              aria-pressed={p.permuta}
+              onClick={() => set("permuta", !p.permuta)}
+              className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm transition-all"
+              style={{ background: "var(--admin-surface-hover)", color: "var(--admin-text)" }}
+            >
               <div
                 className="flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
                 style={{
@@ -706,7 +721,7 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                 />
               </div>
               Acepta permuta
-            </label>
+            </button>
           </div>
           </ErrorBoundary>
         </div>

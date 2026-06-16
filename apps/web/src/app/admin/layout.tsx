@@ -14,6 +14,7 @@ import {
   Loader2,
   Moon,
   Sun,
+  MapPin,
 } from "lucide-react";
 import logo from "@/assets/images/Logo2.png";
 
@@ -92,6 +93,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { href: "/admin", label: "Propiedades", icon: Building2 },
+    { href: "/admin/ubicaciones", label: "Ubicaciones", icon: MapPin },
   ];
 
   return (

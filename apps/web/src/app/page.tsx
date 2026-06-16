@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PropertyCard } from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useProperties";
-import { CIUDADES, getBarrios, WHATSAPP, WHATSAPP_VISITA, type Ciudad } from "@/lib/properties";
+import { api } from "@/lib/api-client";
+import { WHATSAPP, WHATSAPP_VISITA, CIUDADES, getBarrios, type Ciudad } from "@/lib/properties";
 import { Search, Compass, MessageCircle, Shield, MapPin, ChevronRight, BarChart3, BadgeCheck, Target, Navigation } from "lucide-react";
 import hero from "@/assets/images/Hero.png";
 import logo from "@/assets/images/Logo2.png";
@@ -19,8 +20,29 @@ export default function HomePage() {
   const [tipo, setTipo] = useState("");
   const [zona, setZona] = useState("");
   const [maxPrice, setMaxPrice] = useState(300000);
+  const [cityItems, setCityItems] = useState<{ id: string; nombre: string }[]>(
+    CIUDADES.map((n) => ({ id: n, nombre: n }))
+  );
+  const [barrios, setBarrios] = useState<string[]>([]);
 
-  const barriosDisponibles = useMemo(() => getBarrios(ciudad), [ciudad]);
+  useEffect(() => {
+    api.get<any[]>("/api/lookup/cities")
+      .then((data) => setCityItems(data ?? []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!ciudad) { setBarrios([]); return; }
+    const city = cityItems.find((c) => c.nombre === ciudad);
+    if (!city) return;
+    if (city.id === ciudad) {
+      setBarrios(getBarrios(ciudad));
+      return;
+    }
+    api.get<any[]>(`/api/lookup/cities/${city.id}/barrios`)
+      .then((data) => setBarrios((data ?? []).map((b: any) => b.nombre)))
+      .catch(() => setBarrios([]));
+  }, [ciudad, cityItems]);
 
   const searchHref = useMemo(() => {
     const p = new URLSearchParams();
@@ -103,8 +125,8 @@ export default function HomePage() {
             className="rounded-lg border border-white/20 bg-black/40 px-3 py-3 text-sm text-white backdrop-blur-sm"
           >
             <option value="" className="text-foreground">Ciudad</option>
-            {CIUDADES.map((c) => (
-              <option key={c} className="text-foreground">{c}</option>
+            {cityItems.map((c) => (
+              <option key={c.id} className="text-foreground">{c.nombre}</option>
             ))}
           </select>
           <select
@@ -135,7 +157,7 @@ export default function HomePage() {
             className="rounded-lg border border-white/20 bg-black/40 px-3 py-3 text-sm text-white backdrop-blur-sm"
           >
             <option value="" className="text-foreground">Zona</option>
-            {barriosDisponibles.map((b) => (
+            {barrios.map((b) => (
               <option key={b} className="text-foreground">{b}</option>
             ))}
           </select>

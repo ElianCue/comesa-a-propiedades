@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, Suspense } from "react";
+import { useMemo, useState, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -115,8 +115,31 @@ function BusquedaContent() {
   const [sort, setSort] = useState<SortKey>("relevance");
   const [view, setView] = useState<"grid" | "list">("list");
   const page = useMemo(() => Math.max(1, Number(params.get("page")) || 1), [params]);
+  const [cities, setCities] = useState<{ id: string; nombre: string }[]>(
+    CIUDADES.map((n) => ({ id: n, nombre: n }))
+  );
+  const [barrios, setBarrios] = useState<string[]>([]);
 
   const filters = useMemo(() => parseFilters(params), [params]);
+
+  useEffect(() => {
+    api.get<any[]>("/api/lookup/cities")
+      .then((data) => setCities(data ?? []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!filters.ciudad) { setBarrios([]); return; }
+    const city = cities.find((c) => c.nombre === filters.ciudad);
+    if (!city) return;
+    if (city.id === filters.ciudad) {
+      setBarrios(getBarrios(filters.ciudad));
+      return;
+    }
+    api.get<any[]>(`/api/lookup/cities/${city.id}/barrios`)
+      .then((data) => setBarrios((data ?? []).map((b: any) => b.nombre)))
+      .catch(() => setBarrios([]));
+  }, [filters.ciudad, cities]);
 
   const updateFilters = useCallback(
     (f: Filters) => {
@@ -254,8 +277,8 @@ function BusquedaContent() {
               className="rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground outline-none"
             >
               <option value="">Todas las ciudades</option>
-              {CIUDADES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+              {cities.map((c) => (
+                <option key={c.id} value={c.nombre}>{c.nombre}</option>
               ))}
             </select>
             <select
@@ -273,7 +296,7 @@ function BusquedaContent() {
               className="rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground outline-none"
             >
               <option value="">Todos los barrios</option>
-              {getBarrios(filters.ciudad).map((b) => (
+              {barrios.map((b) => (
                 <option key={b} value={b}>{b}</option>
               ))}
             </select>

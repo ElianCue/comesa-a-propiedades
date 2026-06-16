@@ -38,7 +38,7 @@ export function serializeProperty(p: any) {
   return {
     id: p.id,
     ciudad: p.city.nombre,
-    barrio: p.barrio.nombre,
+    barrio: p.barrio?.nombre ?? "",
     tipo: p.property_type.nombre,
     operacion: p.operation.nombre,
     moneda: p.currency.codigo,
@@ -76,7 +76,7 @@ export function serializeProperty(p: any) {
 
 async function resolveLookups(input: {
   ciudad: string;
-  barrio: string;
+  barrio?: string;
   tipo: string;
   operacion: string;
   moneda: string;
@@ -87,9 +87,13 @@ async function resolveLookups(input: {
       throw new NotFoundError(`Ciudad "${input.ciudad}" no encontrada`);
     }
 
-    const barrio = await prisma.barrio.findFirst({ where: { nombre: input.barrio, city_id: city.id } });
-    if (!barrio) {
-      throw new NotFoundError(`Barrio "${input.barrio}" no encontrado en la ciudad "${input.ciudad}"`);
+    let barrio_id: string | null = null;
+    if (input.barrio) {
+      const barrio = await prisma.barrio.findFirst({ where: { nombre: input.barrio, city_id: city.id } });
+      if (!barrio) {
+        throw new NotFoundError(`Barrio "${input.barrio}" no encontrado en la ciudad "${input.ciudad}"`);
+      }
+      barrio_id = barrio.id;
     }
 
     const property_type = await prisma.propertyType.findUnique({ where: { nombre: input.tipo } });
@@ -109,7 +113,7 @@ async function resolveLookups(input: {
 
     return {
       city_id: city.id,
-      barrio_id: barrio.id,
+      barrio_id,
       property_type_id: property_type.id,
       operation_id: operation.id,
       currency_id: currency.id,
@@ -293,7 +297,7 @@ export class PropertyService {
 
     if (input.ciudad || input.barrio || input.tipo || input.operacion || input.moneda) {
       const city = input.ciudad ? null : await prisma.city.findUnique({ where: { id: existing.city_id } });
-      const barrio = input.barrio ? null : await prisma.barrio.findUnique({ where: { id: existing.barrio_id } });
+      const barrio = input.barrio ? null : existing.barrio_id ? await prisma.barrio.findUnique({ where: { id: existing.barrio_id } }) : null;
       const ptype = input.tipo ? null : await prisma.propertyType.findUnique({ where: { id: existing.property_type_id } });
       const op = input.operacion ? null : await prisma.operation.findUnique({ where: { id: existing.operation_id } });
       const cur = input.moneda ? null : await prisma.currency.findUnique({ where: { id: existing.currency_id } });

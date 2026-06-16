@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useProperties } from "@/hooks/useProperties";
-import { CIUDADES, getBarrios, formatPriceFromProperty, type Property, type Ciudad } from "@/lib/properties";
+import { api } from "@/lib/api-client";
+import { formatPriceFromProperty, CIUDADES, getBarrios, type Property, type Ciudad } from "@/lib/properties";
 import {
   Search,
   X,
@@ -38,13 +39,34 @@ export default function MapaPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [zonaSearch, setZonaSearch] = useState("");
   const [clickKey, setClickKey] = useState(0);
+  const [mapCities, setMapCities] = useState<{ id: string; nombre: string }[]>(
+    CIUDADES.map((n) => ({ id: n, nombre: n }))
+  );
+  const [mapBarrios, setMapBarrios] = useState<string[]>([]);
 
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const markers = useRef<Record<string, any>>({});
   const listRef = useRef<HTMLDivElement>(null);
 
-  const barriosDisponibles = useMemo(() => getBarrios(ciudad), [ciudad]);
+  useEffect(() => {
+    api.get<any[]>("/api/lookup/cities")
+      .then((data) => setMapCities(data ?? []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!ciudad) { setMapBarrios([]); return; }
+    const city = mapCities.find((c) => c.nombre === ciudad);
+    if (!city) return;
+    if (city.id === ciudad) {
+      setMapBarrios(getBarrios(ciudad));
+      return;
+    }
+    api.get<any[]>(`/api/lookup/cities/${city.id}/barrios`)
+      .then((data) => setMapBarrios((data ?? []).map((b: any) => b.nombre)))
+      .catch(() => setMapBarrios([]));
+  }, [ciudad, mapCities]);
 
   const filtered = useMemo(
     () =>
@@ -182,7 +204,7 @@ export default function MapaPage() {
   const toggle = <T,>(arr: T[], v: T) =>
     arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
 
-  const zonasFiltradas = barriosDisponibles.filter((b) =>
+  const zonasFiltradas = mapBarrios.filter((b) =>
     b.toLowerCase().includes(zonaSearch.toLowerCase())
   );
 
@@ -253,17 +275,17 @@ export default function MapaPage() {
                 >
                   Todas
                 </button>
-                {CIUDADES.map((c) => (
+                {mapCities.map((c) => (
                   <button
-                    key={c}
-                    onClick={() => { setCiudad(c); setZonas([]); }}
+                    key={c.id}
+                    onClick={() => { setCiudad(c.nombre as Ciudad); setZonas([]); }}
                     className={`flex-1 rounded-lg py-2 text-xs font-semibold transition ${
-                      ciudad === c
+                      ciudad === c.nombre
                         ? "bg-foreground text-background shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {c}
+                    {c.nombre}
                   </button>
                 ))}
               </div>

@@ -1,7 +1,7 @@
 export type Operacion = "Venta" | "Alquiler";
 export type Tipo = "Casa" | "Depto" | "PH" | "Local" | "Terreno" | "Campo" | "Oficina" | "Hotel" | "Negocio Especial" | "Quinta" | "Fondo Comercio" | "Galpon" | "Cochera";
 export type Moneda = "USD" | "ARS";
-export type Ciudad = "La Plata" | "Mar del Plata";
+export type Ciudad = string;
 
 export interface PropertyType {
   id: string;
@@ -71,9 +71,11 @@ export interface Property {
   detalles?: Record<string, Array<{ clave: string; valor: string }>>;
 }
 
+/** @deprecated Usar fetch a /api/lookup/cities */
 export const CIUDADES: Ciudad[] = ["La Plata", "Mar del Plata"];
 
-export const BARRIOS: Record<Ciudad, string[]> = {
+/** @deprecated Usar fetch a /api/lookup/cities/{id}/barrios */
+export const BARRIOS: Record<string, string[]> = {
   "La Plata": [
     "Centro",
     "Tolosa",
@@ -88,6 +90,7 @@ export const BARRIOS: Record<Ciudad, string[]> = {
   "Mar del Plata": ["Centro", "La Perla", "Playa Grande"],
 };
 
+/** @deprecated Usar fetch a /api/lookup/cities/{id}/barrios */
 export function getBarrios(ciudad?: Ciudad | ""): string[] {
   if (!ciudad || !(ciudad in BARRIOS)) return [];
   return BARRIOS[ciudad];

@@ -12,7 +12,8 @@
     "postinstall": "pnpm --filter @comesana/shared run build && prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:sync-cities": "tsx prisma/sync-cities.ts"
   },
   "dependencies": {
     "@comesana/shared": "workspace:*",
