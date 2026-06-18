@@ -10,7 +10,7 @@ export function useProperties(): [Property[], () => void, boolean] {
 
   const load = useCallback(async () => {
     try {
-      const res = await api.get<any>("/api/properties?limit=200");
+      const res = await api.get<any>("/api/properties?limit=200&activo=true");
       // API may return either an array or a paginated object { data, meta }
       const items = Array.isArray(res) ? res : res?.data ?? [];
       setProperties(items as Property[]);

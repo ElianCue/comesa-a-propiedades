@@ -6,6 +6,7 @@ export const propertyQuerySchema = z.object({
   tipo: z.string().optional(),
   barrio: z.string().optional(),
   precioMax: z.coerce.number().optional(),
+  activo: z.coerce.boolean().optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().default(20),
 });

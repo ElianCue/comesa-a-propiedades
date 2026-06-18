@@ -135,10 +135,14 @@ export class PropertyService {
     precioMax?: number;
     aptoBanco?: boolean;
     permuta?: boolean;
+    activo?: boolean;
     cursor?: string;
     limit: number;
   }) {
-    const where: any = { activo: true };
+    const where: any = {};
+    if (filters.activo !== undefined) {
+      where.activo = filters.activo;
+    }
 
     if (filters.ciudad) {
       const city = await prisma.city.findUnique({ where: { nombre: filters.ciudad } });

@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
       tipo: searchParams.get("tipo"),
       barrio: searchParams.get("barrio"),
       precioMax: searchParams.get("precioMax"),
+      activo: searchParams.get("activo"),
       cursor: searchParams.get("cursor"),
       limit: searchParams.get("limit"),
     };
@@ -24,6 +25,7 @@ export async function GET(request: NextRequest) {
     const result = await propertyService.list({
       ...filters,
       precioMax: filters.precioMax ?? undefined,
+      activo: filters.activo ?? undefined,
       cursor: filters.cursor ?? undefined,
     });
 
