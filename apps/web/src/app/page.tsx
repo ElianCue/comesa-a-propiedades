@@ -50,7 +50,7 @@ export default function HomePage() {
     if (op) p.set("op", op);
     if (tipo) p.set("tipo", tipo);
     if (zona) p.set("barrio", zona);
-    if (maxPrice > 0) {
+    if (maxPrice > 0 && maxPrice !== 300000) {
       p.set("precioMax", String(maxPrice));
       p.set("moneda", "USD");
     }

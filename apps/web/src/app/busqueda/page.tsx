@@ -76,7 +76,7 @@ function matchProperty(p: Property, f: Filters): boolean {
   if (f.tipo.length > 0 && !f.tipo.includes(p.tipo)) return false;
   if (f.barrio && p.barrio !== f.barrio) return false;
   if (f.precioMin > 0 && p.precio < f.precioMin) return false;
-  if (f.precioMax > 0 && p.precio > f.precioMax) return false;
+  if (f.precioMax > 0 && f.moneda === p.moneda && p.precio > f.precioMax) return false;
   if (f.ambientes !== null && p.ambientes < f.ambientes) return false;
   if (f.dormitorios !== null && p.dormitorios < f.dormitorios) return false;
   if (f.supMin > 0 && p.m2Totales < f.supMin) return false;
