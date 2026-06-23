@@ -211,28 +211,28 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
      setSaving(true);
      setError(null);
      try {
-       const body: Record<string, unknown> = {
-         ciudad: p.ciudad || undefined,
-         barrio: p.barrio || undefined,
-         tipo: p.tipo || undefined,
-         operacion: p.operacion || undefined,
-         moneda: p.moneda || undefined,
-         direccion: p.direccion || undefined,
-         precio: p.precio || undefined,
-         m2_totales: p.m2Totales || undefined,
-         m2_cubiertos: p.m2Cubiertos || undefined,
-         ambientes: p.ambientes || undefined,
-         dormitorios: p.dormitorios || undefined,
-         banos: p.banos || undefined,
-         piso: p.piso || undefined,
-         antiguedad: p.antiguedad || undefined,
-         descripcion: p.descripcion || undefined,
-         lat: p.lat,
-         lng: p.lng,
-         m2_terreno: p.m2Terreno || undefined,
-         m2_descubierta: p.m2Descubierta || undefined,
-         cant_plantas: p.cantPlantas || undefined,
-         expensas: p.expensas || undefined,
+      const body: Record<string, unknown> = {
+          ciudad: p.ciudad || undefined,
+          barrio: p.barrio || undefined,
+          tipo: p.tipo || undefined,
+          operacion: p.operacion || undefined,
+          moneda: p.moneda || undefined,
+          direccion: p.direccion || undefined,
+          precio: p.precio,
+          m2_totales: p.m2Totales,
+          m2_cubiertos: p.m2Cubiertos,
+          ambientes: p.ambientes,
+          dormitorios: p.dormitorios,
+          banos: p.banos,
+          piso: p.piso || undefined,
+          antiguedad: p.antiguedad || undefined,
+          descripcion: p.descripcion || undefined,
+          lat: p.lat,
+          lng: p.lng,
+          m2_terreno: p.m2Terreno || undefined,
+          m2_descubierta: p.m2Descubierta || undefined,
+          cant_plantas: p.cantPlantas || undefined,
+          expensas: p.expensas || undefined,
          fotos: p.fotos.filter(Boolean),
          amenities: p.amenities,
          activo: p.activo,
@@ -436,19 +436,19 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                    ))}
                  </select>
                </Field>
-               <Field label="Precio">
-                 <input type="number" value={p.precio} onChange={(e) => set("precio", +e.target.value)} />
-               </Field>
+                <Field label="Precio">
+                  <input type="number" min={0} value={p.precio} onChange={(e) => set("precio", +e.target.value)} />
+                </Field>
              </div>
            </Section>
 
            <Section title="Dimensiones">
              <div className="grid gap-4 md:grid-cols-3">
-               <Field label="M² totales">
-                 <input type="number" value={p.m2Totales} onChange={(e) => set("m2Totales", +e.target.value)} />
-               </Field>
-               <Field label="M² cubiertos">
-                 <input type="number" value={p.m2Cubiertos} onChange={(e) => set("m2Cubiertos", +e.target.value)} />
+                <Field label="M² totales">
+                  <input type="number" min={0} value={p.m2Totales} onChange={(e) => set("m2Totales", +e.target.value)} />
+                </Field>
+                <Field label="M² cubiertos">
+                  <input type="number" min={0} value={p.m2Cubiertos} onChange={(e) => set("m2Cubiertos", +e.target.value)} />
                </Field>
                <Field label="M² terreno">
                  <input 
@@ -470,14 +470,14 @@ export function PropertyDrawer({ property, onClose, onSaved }: Props) {
                    }}
                  />
                </Field>
-               <Field label="Ambientes">
-                 <input type="number" value={p.ambientes} onChange={(e) => set("ambientes", +e.target.value)} />
-               </Field>
-               <Field label="Dormitorios">
-                 <input type="number" value={p.dormitorios} onChange={(e) => set("dormitorios", +e.target.value)} />
-               </Field>
-               <Field label="Baños">
-                 <input type="number" value={p.banos} onChange={(e) => set("banos", +e.target.value)} />
+                <Field label="Ambientes">
+                  <input type="number" min={0} value={p.ambientes} onChange={(e) => set("ambientes", +e.target.value)} />
+                </Field>
+                <Field label="Dormitorios">
+                  <input type="number" min={0} value={p.dormitorios} onChange={(e) => set("dormitorios", +e.target.value)} />
+                </Field>
+                <Field label="Baños">
+                  <input type="number" min={0} value={p.banos} onChange={(e) => set("banos", +e.target.value)} />
                </Field>
                <Field label="Cant. plantas">
                  <input 

@@ -71,14 +71,18 @@ export function PropertyCard({ p, variant = "grid" }: Props) {
         </div>
 
         <div className="flex items-center gap-4 border-t border-border pt-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Bed className="h-3.5 w-3.5" />
-            {p.dormitorios}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Bath className="h-3.5 w-3.5" />
-            {p.banos}
-          </span>
+          {p.dormitorios > 0 && (
+            <span className="flex items-center gap-1.5">
+              <Bed className="h-3.5 w-3.5" />
+              {p.dormitorios}
+            </span>
+          )}
+          {p.banos > 0 && (
+            <span className="flex items-center gap-1.5">
+              <Bath className="h-3.5 w-3.5" />
+              {p.banos}
+            </span>
+          )}
           <span className="flex items-center gap-1.5">
             <Maximize2 className="h-3.5 w-3.5" />
             {p.m2Totales} m&sup2;
@@ -153,14 +157,18 @@ return (
         </div>
 
         <div className="flex items-center gap-4 border-t border-[oklch(0.85_0.03_80/0.3)] pt-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Bed className="h-3.5 w-3.5" />
-            {p.dormitorios}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Bath className="h-3.5 w-3.5" />
-            {p.banos}
-          </span>
+          {p.dormitorios > 0 && (
+            <span className="flex items-center gap-1.5">
+              <Bed className="h-3.5 w-3.5" />
+              {p.dormitorios}
+            </span>
+          )}
+          {p.banos > 0 && (
+            <span className="flex items-center gap-1.5">
+              <Bath className="h-3.5 w-3.5" />
+              {p.banos}
+            </span>
+          )}
           <span className="flex items-center gap-1.5">
             <Maximize2 className="h-3.5 w-3.5" />
             {p.m2Totales} m&sup2;

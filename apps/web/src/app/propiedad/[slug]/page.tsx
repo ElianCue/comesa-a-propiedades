@@ -293,11 +293,13 @@ export default function PropertyPage({ params }: Props) {
                   value={`${p.m2Totales} m²`}
                   label="Totales"
                 />
-                <SpecCard
-                  icon={<Home className="h-5 w-5" />}
-                  value={`${p.m2Cubiertos} m²`}
-                  label="Cubiertos"
-                />
+                {p.m2Cubiertos > 0 && (
+                  <SpecCard
+                    icon={<Home className="h-5 w-5" />}
+                    value={`${p.m2Cubiertos} m²`}
+                    label="Cubiertos"
+                  />
+                )}
                 {p.m2Terreno && (
                   <SpecCard
                     icon={<Ruler className="h-5 w-5" />}
@@ -312,21 +314,27 @@ export default function PropertyPage({ params }: Props) {
                     label="Descubierta"
                   />
                 )}
-                <SpecCard
-                  icon={<Bed className="h-5 w-5" />}
-                  value={`${p.dormitorios}`}
-                  label="Dormitorios"
-                />
-                <SpecCard
-                  icon={<Bath className="h-5 w-5" />}
-                  value={`${p.banos}`}
-                  label="Baños"
-                />
-                <SpecCard
-                  icon={<Layers className="h-5 w-5" />}
-                  value={`${p.ambientes}`}
-                  label="Ambientes"
-                />
+                {p.dormitorios > 0 && (
+                  <SpecCard
+                    icon={<Bed className="h-5 w-5" />}
+                    value={`${p.dormitorios}`}
+                    label="Dormitorios"
+                  />
+                )}
+                {p.banos > 0 && (
+                  <SpecCard
+                    icon={<Bath className="h-5 w-5" />}
+                    value={`${p.banos}`}
+                    label="Baños"
+                  />
+                )}
+                {p.ambientes > 0 && (
+                  <SpecCard
+                    icon={<Layers className="h-5 w-5" />}
+                    value={`${p.ambientes}`}
+                    label="Ambientes"
+                  />
+                )}
                 {p.cantPlantas && (
                   <SpecCard
                     icon={<Building className="h-5 w-5" />}
