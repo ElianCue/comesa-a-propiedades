@@ -52,6 +52,10 @@ export default function PropertyPage({ params }: Props) {
   const [mapReady, setMapReady] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
+  const returnUrl =
+    typeof window !== "undefined"
+      ? sessionStorage.getItem("comesana.returnUrl") || "/"
+      : "/";
 
   useEffect(() => {
     const id = slug.split("-").pop();
@@ -223,13 +227,31 @@ export default function PropertyPage({ params }: Props) {
       <Navbar />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <Link
-          href="/"
-          className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver al listado
-        </Link>
+        <div className="mb-6 flex items-center justify-between">
+          <Link
+            href={returnUrl}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver al listado
+          </Link>
+          <button
+            onClick={() => {
+              navigator
+                .share?.({
+                  title: propertyTitle(p!),
+                  url: window.location.href,
+                })
+                .catch(() => {
+                  navigator.clipboard.writeText(window.location.href);
+                });
+            }}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground lg:hidden"
+          >
+            <Share2 className="h-4 w-4" />
+            Compartir
+          </button>
+        </div>
 
         <PropertyGallery
           photos={p.fotos ?? []}
@@ -429,23 +451,6 @@ export default function PropertyPage({ params }: Props) {
               </div>
             )}
 
-            {/* Map */}
-            {hasMap && (
-              <div className="animate-slide-up delay-5">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-[oklch(0.32_0.08_255)]" />
-                  <h2 className="font-display text-xl font-semibold">
-                    Ubicación
-                  </h2>
-                </div>
-                <div className="mt-4">
-                  <div
-                    ref={mapRef}
-                    className="h-[320px] w-full overflow-hidden rounded-2xl"
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* ── SIDEBAR ── */}
@@ -485,7 +490,7 @@ export default function PropertyPage({ params }: Props) {
                       navigator.clipboard.writeText(window.location.href);
                     });
                 }}
-                className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-border py-3 text-sm font-semibold transition hover:bg-muted"
+                className="mt-2 hidden w-full items-center justify-center gap-2 rounded-xl border border-border py-3 text-sm font-semibold transition hover:bg-muted lg:flex"
               >
                 <Share2 className="h-4 w-4" />
                 Compartir
@@ -530,6 +535,24 @@ export default function PropertyPage({ params }: Props) {
               </div>
             </div>
           </aside>
+
+          {/* Map — below sidebar on mobile, main column on desktop */}
+          {hasMap && (
+            <div className="animate-slide-up delay-5 lg:col-start-1 lg:col-end-2">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-[oklch(0.32_0.08_255)]" />
+                <h2 className="font-display text-xl font-semibold">
+                  Ubicación
+                </h2>
+              </div>
+              <div className="mt-4">
+                <div
+                  ref={mapRef}
+                  className="h-[320px] w-full overflow-hidden rounded-2xl"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

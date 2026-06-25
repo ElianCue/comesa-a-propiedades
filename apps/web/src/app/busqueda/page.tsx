@@ -167,6 +167,10 @@ function BusquedaContent() {
     currentPage * PER_PAGE,
   );
 
+  useEffect(() => {
+    sessionStorage.setItem("comesana.returnUrl", window.location.href);
+  });
+
   const [alertEmail, setAlertEmail] = useState("");
   const [alertSent, setAlertSent] = useState(false);
   const [alertSending, setAlertSending] = useState(false);
@@ -204,6 +208,7 @@ function BusquedaContent() {
       if (p > 1) p2.set("page", String(p));
       const s = p2.toString();
       router.push(`/busqueda${s ? `?${s}` : ""}`, { scroll: false });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
     [router, filters],
   );
