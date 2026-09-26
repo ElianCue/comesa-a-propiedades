@@ -70,9 +70,6 @@ export function Footer() {
               <Link href="/" className="transition hover:text-foreground py-1.5">
                 Inicio
               </Link>
-              <Link href="/mapa" className="transition hover:text-foreground py-1.5">
-                Mapa de propiedades
-              </Link>
 
             </div>
           </div>

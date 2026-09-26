@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Home, Map, Search, Menu, X, MessageCircle } from "lucide-react";
+import { Home, Search, Menu, X, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { WHATSAPP } from "@/lib/properties";
@@ -22,7 +22,6 @@ export function Navbar() {
 
   const links = [
     { href: "/", label: "Inicio", icon: Home },
-    { href: "/mapa", label: "Mapa", icon: Map },
     { href: "/busqueda", label: "Buscar", icon: Search },
   ];
 

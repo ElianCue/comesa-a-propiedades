@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -27,19 +27,12 @@ import {
   ArrowLeft,
   Share2,
   MessageCircle,
-  MapPin,
   Ruler,
   Layers,
   Building,
   Phone,
   Navigation,
 } from "lucide-react";
-
-declare global {
-  interface Window {
-    L: any;
-  }
-}
 
 interface Props {
   params: { slug: string };
@@ -49,9 +42,6 @@ export default function PropertyPage({ params }: Props) {
   const { slug } = params;
   const [p, setP] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
-  const [mapReady, setMapReady] = useState(false);
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
   const returnUrl =
     typeof window !== "undefined"
       ? sessionStorage.getItem("comesana.returnUrl") || "/"
@@ -81,62 +71,6 @@ export default function PropertyPage({ params }: Props) {
       if (ogDesc) ogDesc.setAttribute("content", propertyDescription(p));
     }
   }, [p]);
-
-  const initMap = useCallback(() => {
-    if (!mapRef.current || mapInstance.current || !p) return;
-    const L = window.L;
-    if (!L) return;
-    const lat = p.lat;
-    const lng = p.lng;
-    if (lat === 0 && lng === 0) return;
-    mapInstance.current = L.map(mapRef.current, {
-      zoomControl: true,
-      scrollWheelZoom: false,
-    }).setView([lat, lng], 15);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap",
-    }).addTo(mapInstance.current);
-    const icon = L.divIcon({
-      className: "",
-      html: `<div style="background:oklch(0.32 0.08 255);color:white;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:700;font-family:DM Sans,sans-serif;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.4);border:2.5px solid white">${formatPriceFromProperty(p)}</div>`,
-      iconSize: [150, 40],
-      iconAnchor: [75, 40],
-    });
-    L.marker([lat, lng], { icon }).addTo(mapInstance.current);
-    setTimeout(() => mapInstance.current?.invalidateSize(), 200);
-    setMapReady(true);
-  }, [p]);
-
-  useEffect(() => {
-    if (!p) return;
-    if (p.lat === 0 && p.lng === 0) return;
-    if (mapInstance.current) return;
-    if (window.L) {
-      initMap();
-      return;
-    }
-    const s = document.createElement("script");
-    s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-    s.onload = initMap;
-    document.head.appendChild(s);
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-    document.head.appendChild(link);
-    return () => {
-      if (mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
-      }
-    };
-  }, [p, initMap]);
-
-  useEffect(() => {
-    if (!mapReady || !p) return;
-    const handleResize = () => mapInstance.current?.invalidateSize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [mapReady, p]);
 
   if (loading) {
     return (
@@ -200,8 +134,6 @@ export default function PropertyPage({ params }: Props) {
       if (!known.has(a)) extraAmenities.push(a);
     }
   }
-
-  const hasMap = p.lat !== 0 && p.lng !== 0;
 
   const schema = {
     "@context": "https://schema.org",
@@ -536,23 +468,6 @@ export default function PropertyPage({ params }: Props) {
             </div>
           </aside>
 
-          {/* Map — below sidebar on mobile, main column on desktop */}
-          {hasMap && (
-            <div className="animate-slide-up delay-5 lg:col-start-1 lg:col-end-2">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-[oklch(0.32_0.08_255)]" />
-                <h2 className="font-display text-xl font-semibold">
-                  Ubicación
-                </h2>
-              </div>
-              <div className="mt-4">
-                <div
-                  ref={mapRef}
-                  className="h-[320px] w-full overflow-hidden rounded-2xl"
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

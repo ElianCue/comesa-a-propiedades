@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { Suspense, useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -17,7 +17,7 @@ import logo from "@/assets/images/Logo2.png";
 
 const PER_PAGE = 12;
 
-export default function HomePage() {
+function HomePageContent() {
   const [all, , loaded] = useProperties();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -489,5 +489,13 @@ export default function HomePage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <HomePageContent />
+    </Suspense>
   );
 }
