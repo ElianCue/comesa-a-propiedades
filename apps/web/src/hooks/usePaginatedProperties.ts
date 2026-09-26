@@ -12,13 +12,22 @@ type PaginatedPropertiesResponse = {
   };
 };
 
-export function usePaginatedProperties(page: number, perPage: number) {
+export function usePaginatedProperties(page: number, perPage: number, enabled = true) {
   const [properties, setProperties] = useState<Property[]>([]);
   const [total, setTotal] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let active = true;
+
+    if (!enabled) {
+      setProperties([]);
+      setTotal(0);
+      setLoaded(true);
+      return () => {
+        active = false;
+      };
+    }
 
     const load = async () => {
       setLoaded(false);
@@ -58,7 +67,7 @@ export function usePaginatedProperties(page: number, perPage: number) {
     return () => {
       active = false;
     };
-  }, [page, perPage]);
+  }, [enabled, page, perPage]);
 
   return {
     properties,

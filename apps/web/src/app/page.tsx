@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PropertyCard } from "@/components/PropertyCard";
-import { useProperties } from "@/hooks/useProperties";
 import { usePaginatedProperties } from "@/hooks/usePaginatedProperties";
 import { api } from "@/lib/api-client";
 import { WHATSAPP, WHATSAPP_VISITA, CIUDADES, getBarrios, type Ciudad } from "@/lib/properties";
@@ -18,11 +17,13 @@ import logo from "@/assets/images/Logo2.png";
 const PER_PAGE = 12;
 
 function HomePageContent() {
-  const [all, , loaded] = useProperties();
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const { properties: pagedProperties, total, loaded: pagedLoaded } = usePaginatedProperties(page, PER_PAGE);
+  const { properties: firstPageProperties, loaded: firstPageLoaded } = usePaginatedProperties(1, PER_PAGE, page !== 1);
+  const featured = page === 1 ? pagedProperties.slice(0, 6) : firstPageProperties.slice(0, 6);
+  const featuredLoaded = page === 1 ? pagedLoaded : firstPageLoaded;
   const [ciudad, setCiudad] = useState<"" | Ciudad>("");
   const [op, setOp] = useState<"" | "Venta" | "Alquiler">("");
   const [tipo, setTipo] = useState("");
@@ -243,7 +244,7 @@ function HomePageContent() {
             </Link>
           </div>
 
-          {!loaded ? (
+          {!featuredLoaded ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse rounded-xl bg-card p-4">
@@ -256,7 +257,7 @@ function HomePageContent() {
           ) : (
             <>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {all.slice(0, 6).map((p) => (
+                {featured.map((p) => (
                   <PropertyCard key={p.id} p={p} />
                 ))}
               </div>
