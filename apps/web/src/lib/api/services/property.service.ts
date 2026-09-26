@@ -137,6 +137,7 @@ export class PropertyService {
     permuta?: boolean;
     activo?: boolean;
     cursor?: string;
+    page?: number;
     limit: number;
   }) {
     const where: any = {};
@@ -173,6 +174,7 @@ export class PropertyService {
     }
 
     const take = Math.min(filters.limit, 200);
+    const skip = filters.page ? (filters.page - 1) * take : undefined;
 
     const [properties, total] = await Promise.all([
       prisma.property.findMany({
@@ -180,6 +182,7 @@ export class PropertyService {
         include: listingInclude,
         orderBy: { created_at: "desc" },
         take: take + 1,
+        ...(skip !== undefined ? { skip } : {}),
         ...(filters.cursor ? { cursor: { id: filters.cursor }, skip: 1 } : {}),
       }),
       prisma.property.count({ where }),

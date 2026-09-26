@@ -9,6 +9,7 @@ export const propertyQuerySchema = z.object({
   activo: z.coerce.boolean().optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().default(20),
+  page: z.coerce.number().int().positive().optional(),
 });
 
 export const createPropertySchema = z.object({

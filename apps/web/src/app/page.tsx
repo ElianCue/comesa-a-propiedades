@@ -3,18 +3,26 @@
 import { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PropertyCard } from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useProperties";
+import { usePaginatedProperties } from "@/hooks/usePaginatedProperties";
 import { api } from "@/lib/api-client";
 import { WHATSAPP, WHATSAPP_VISITA, CIUDADES, getBarrios, type Ciudad } from "@/lib/properties";
 import { Search, Compass, MessageCircle, Shield, MapPin, ChevronRight, BarChart3, BadgeCheck, Target, Navigation } from "lucide-react";
 import hero from "@/assets/images/Hero.png";
 import logo from "@/assets/images/Logo2.png";
 
+const PER_PAGE = 12;
+
 export default function HomePage() {
   const [all, , loaded] = useProperties();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const { properties: pagedProperties, total, loaded: pagedLoaded } = usePaginatedProperties(page, PER_PAGE);
   const [ciudad, setCiudad] = useState<"" | Ciudad>("");
   const [op, setOp] = useState<"" | "Venta" | "Alquiler">("");
   const [tipo, setTipo] = useState("");
@@ -24,6 +32,12 @@ export default function HomePage() {
     CIUDADES.map((n) => ({ id: n, nombre: n }))
   );
   const [barrios, setBarrios] = useState<string[]>([]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    url.hash = "catalogo";
+    sessionStorage.setItem("comesana.returnUrl", `${url.pathname}${url.search}${url.hash}`);
+  }, [searchParams]);
 
   useEffect(() => {
     api.get<any[]>("/api/lookup/cities")
@@ -57,6 +71,30 @@ export default function HomePage() {
     const s = p.toString();
     return `/busqueda${s ? `?${s}` : ""}`;
   }, [ciudad, op, tipo, zona, maxPrice]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
+
+  useEffect(() => {
+    if (!pagedLoaded || total === 0) return;
+    if (page <= totalPages) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(totalPages));
+    const query = params.toString();
+    router.replace(`/${query ? `?${query}` : ""}`, { scroll: false });
+  }, [page, pagedLoaded, router, searchParams, total, totalPages]);
+
+  const goToPage = (nextPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (nextPage <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", String(nextPage));
+    }
+    const query = params.toString();
+    router.push(`/${query ? `?${query}` : ""}`, { scroll: false });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -229,6 +267,87 @@ export default function HomePage() {
                 >
                   Ver todas las propiedades <ChevronRight className="h-4 w-4" />
                 </Link>
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* Todas las propiedades */}
+        <section id="catalogo" className="mt-24 scroll-mt-6">
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-[oklch(0.36_0.14_265/0.3)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-[oklch(0.36_0.14_265)]">
+                Todas las propiedades
+              </span>
+              <h2 className="mt-3 font-display text-3xl font-bold tracking-tight md:text-4xl">
+                Explorá el catálogo completo
+              </h2>
+            </div>
+            <div className="hidden items-center gap-2 md:flex">
+              <button
+                type="button"
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage <= 1 || !pagedLoaded}
+                className="rounded-xl border border-border px-4 py-2 text-sm font-medium transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+              >
+                Anterior
+              </button>
+              <span className="text-sm text-muted-foreground">
+                Página {currentPage} de {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage >= totalPages || !pagedLoaded}
+                className="rounded-xl border border-border px-4 py-2 text-sm font-medium transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+
+          {!pagedLoaded ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: PER_PAGE }).map((_, i) => (
+                <div key={i} className="animate-pulse rounded-xl bg-card p-4">
+                  <div className="h-44 w-full rounded-md bg-muted" />
+                  <div className="mt-3 h-4 w-3/4 rounded bg-muted" />
+                  <div className="mt-2 h-3 w-1/2 rounded bg-muted" />
+                </div>
+              ))}
+            </div>
+          ) : pagedProperties.length === 0 ? (
+            <div className="rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
+              No hay propiedades para mostrar.
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {pagedProperties.map((p) => (
+                  <PropertyCard key={p.id} p={p} />
+                ))}
+              </div>
+
+              <div className="mt-8 flex items-center justify-center gap-3 md:hidden">
+                <button
+                  type="button"
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage <= 1 || !pagedLoaded}
+                  className="rounded-xl border border-border px-4 py-3 text-sm font-medium transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+                >
+                  Anterior
+                </button>
+                <span className="text-sm text-muted-foreground">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage >= totalPages || !pagedLoaded}
+                  className="rounded-xl border border-border px-4 py-3 text-sm font-medium transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+                >
+                  Siguiente
+                </button>
               </div>
             </>
           )}

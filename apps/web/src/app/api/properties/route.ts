@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
       activo: searchParams.get("activo"),
       cursor: searchParams.get("cursor"),
       limit: searchParams.get("limit"),
+      page: searchParams.get("page"),
     };
     const cleaned = Object.fromEntries(
       Object.entries(raw).filter(([_, v]) => v !== null)
